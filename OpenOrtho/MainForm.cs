@@ -35,12 +35,12 @@ namespace OpenOrtho
         bool keyZoomOut;
 
         Stopwatch clock;
-        AboutBox about;
+        AboutBox aboutBox;
 
         public MainForm()
         {
             InitializeComponent();
-            about = new AboutBox();
+            aboutBox = new AboutBox();
         }
 
         void LoadProject()
@@ -214,12 +214,26 @@ namespace OpenOrtho
 
         private void glControl_MouseClick(object sender, MouseEventArgs e)
         {
+            if (!loaded) return;
 
+            if (project.Analysis != null)
+            {
+                var viewportPosition = glControl.PointToClient(Form.MousePosition);
+                var position = new Vector3(
+                    viewportPosition.X - glControl.Width * 0.5f,
+                    glControl.Height * 0.5f - viewportPosition.Y, 0);
+                position /= spriteBatch.PixelsPerMeter;
+
+                var view = camera.GetViewMatrix();
+                view.Invert();
+                Vector3.Transform(ref position, ref view, out position);
+                project.Analysis.Points.Add(new Vector2(position.X, position.Y));
+            }
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            aboutBox.ShowDialog(this);
         }
     }
 }
