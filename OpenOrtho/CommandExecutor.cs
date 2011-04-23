@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 
 namespace OpenOrtho
 {
-    public class CommandExecutor
+    public class CommandExecutor : Component
     {
         private int currentCommand = -1;
         private readonly List<Command> history = new List<Command>();

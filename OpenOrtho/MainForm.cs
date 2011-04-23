@@ -26,6 +26,9 @@ namespace OpenOrtho
         Texture2D background;
         SpriteBatch spriteBatch;
 
+        bool setScale;
+        List<Vector2> scaleRefs;
+
         bool keyUp;
         bool keyDown;
         bool keyLeft;
@@ -79,26 +82,44 @@ namespace OpenOrtho
             GL.Clear(ClearBufferMask.ColorBufferBit);
             spriteBatch.Begin(camera.GetViewMatrix());
 
-            if (background != null)
+            if (project != null)
             {
                 var renderWidth = background.Width * scale;
                 spriteBatch.Draw(background, new RectangleF(-renderWidth / 2f, -glControl.Height / 2f, renderWidth, glControl.Height));
-            }
 
-            if (project != null && project.Analysis != null)
-            {
-                spriteBatch.DrawPoints(project.Analysis.Points, Color4.Red, 3);
+                if (setScale)
+                {
+                    var drawMode = scaleRefs.Count == scaleRefs.Capacity ? BeginMode.LineStrip : BeginMode.Points;
+                    spriteBatch.DrawVertices(scaleRefs, drawMode, Color4.Turquoise, 3);
+                }
+
+                if (project.Analysis != null)
+                {
+                    spriteBatch.DrawVertices(project.Analysis.Points, BeginMode.Points, Color4.Red, 3);
+                }
             }
 
             spriteBatch.End();
             glControl.SwapBuffers();
         }
 
+        Vector2 PickModelPoint()
+        {
+            var viewportPosition = glControl.PointToClient(Form.MousePosition);
+            var position = new Vector3(
+                viewportPosition.X - glControl.Width * 0.5f,
+                glControl.Height * 0.5f - viewportPosition.Y, 0);
+            position /= spriteBatch.PixelsPerMeter;
+
+            var view = camera.GetViewMatrix();
+            view.Invert();
+            Vector3.Transform(ref position, ref view, out position);
+
+            return new Vector2(position.X, position.Y);
+        }
+
         private void glControl_Load(object sender, EventArgs e)
         {
-            project = new OrthoProject();
-            project.Analysis = new CephalometricAnalysis();
-
             clock = new Stopwatch();
             clock.Start();
 
@@ -141,15 +162,6 @@ namespace OpenOrtho
             RenderModel();
         }
 
-        private void openRadiographToolStripButton_Click(object sender, EventArgs e)
-        {
-            if (openImageDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                project.Radiograph = openImageDialog.FileName;
-                LoadProject();
-            }
-        }
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -178,24 +190,16 @@ namespace OpenOrtho
             }
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(saveProjectDialog.FileName)) saveAsToolStripMenuItem_Click(this, e);
-            else
+            if (openImageDialog.ShowDialog(this) == DialogResult.OK)
             {
-                using (var writer = XmlWriter.Create(saveProjectDialog.FileName, new XmlWriterSettings { Indent = true }))
-                {
-                    var serializer = new XmlSerializer(typeof(OrthoProject));
-                    serializer.Serialize(writer, project);
-                }
-            }
-        }
+                project = new OrthoProject();
+                project.Radiograph = openImageDialog.FileName;
+                LoadProject();
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (saveProjectDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                saveToolStripMenuItem_Click(this, e);
+                setScale = true;
+                scaleRefs = new List<Vector2>(2);
             }
         }
 
@@ -212,28 +216,74 @@ namespace OpenOrtho
             }
         }
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project == null) return;
+
+            if (string.IsNullOrEmpty(saveProjectDialog.FileName)) saveAsToolStripMenuItem_Click(this, e);
+            else
+            {
+                using (var writer = XmlWriter.Create(saveProjectDialog.FileName, new XmlWriterSettings { Indent = true }))
+                {
+                    var serializer = new XmlSerializer(typeof(OrthoProject));
+                    serializer.Serialize(writer, project);
+                }
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project == null) return;
+
+            if (saveProjectDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                saveToolStripMenuItem_Click(this, e);
+            }
+        }
+
         private void glControl_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!loaded) return;
+            if (project == null) return;
 
-            if (project.Analysis != null)
+            if (setScale)
             {
-                var viewportPosition = glControl.PointToClient(Form.MousePosition);
-                var position = new Vector3(
-                    viewportPosition.X - glControl.Width * 0.5f,
-                    glControl.Height * 0.5f - viewportPosition.Y, 0);
-                position /= spriteBatch.PixelsPerMeter;
+                var point = PickModelPoint();
 
-                var view = camera.GetViewMatrix();
-                view.Invert();
-                Vector3.Transform(ref position, ref view, out position);
-                project.Analysis.Points.Add(new Vector2(position.X, position.Y));
+                commandExecutor.Execute(
+                    () => scaleRefs.Add(point),
+                    () => scaleRefs.RemoveAt(scaleRefs.Count - 1));
+            }
+            else if (project.Analysis != null)
+            {
+                var point = PickModelPoint();
+
+                commandExecutor.Execute(
+                    () => project.Analysis.Points.Add(point),
+                    () => project.Analysis.Points.RemoveAt(project.Analysis.Points.Count - 1));
             }
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutBox.ShowDialog(this);
+        }
+
+        private void commandExecutor_StatusChanged(object sender, EventArgs e)
+        {
+            undoToolStripButton.Enabled = commandExecutor.CanUndo;
+            undoToolStripMenuItem.Enabled = commandExecutor.CanUndo;
+            redoToolStripButton.Enabled = commandExecutor.CanRedo;
+            redoToolStripMenuItem.Enabled = commandExecutor.CanRedo;
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            commandExecutor.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            commandExecutor.Redo();
         }
     }
 }

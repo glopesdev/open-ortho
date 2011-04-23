@@ -81,18 +81,19 @@ namespace OpenOrtho.Graphics
             Draw(texture, new RectangleF(-halfWidth, -halfHeight, texture.Width, texture.Height));
         }
 
-        public void DrawPoints(IEnumerable<Vector2> points, Color4 color, float size)
+        public void DrawVertices(List<Vector2> vertices, BeginMode drawMode, Color4 color, float size)
         {
             LoadView();
 
             GL.Color4(color);
             GL.PointSize(size);
+            GL.LineWidth(size);
             GL.Disable(EnableCap.Texture2D);
-            GL.Begin(BeginMode.Points);
+            GL.Begin(drawMode);
 
-            foreach (var point in points)
+            for (int i = 0; i < vertices.Count; i++)
             {
-                GL.Vertex2(point * PixelsPerMeter);
+                GL.Vertex2(vertices[i] * PixelsPerMeter);
             }
 
             GL.End();

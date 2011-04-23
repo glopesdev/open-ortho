@@ -10,6 +10,7 @@ namespace OpenOrtho
         public OrthoProject()
         {
             PixelsPerMeter = 100;
+            Analysis = new CephalometricAnalysis();
         }
 
         public string Radiograph { get; set; }
