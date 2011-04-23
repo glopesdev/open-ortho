@@ -56,7 +56,9 @@
     </Compile>
     <Compile Include="CephalometricAnalysis.cs" />
     <Compile Include="CephalometricTemplate.cs" />
-    <Compile Include="CommandExecutor.cs" />
+    <Compile Include="CommandExecutor.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Graphics\Camera2D.cs" />
     <Compile Include="Graphics\GraphicsResource.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
@@ -96,6 +98,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
