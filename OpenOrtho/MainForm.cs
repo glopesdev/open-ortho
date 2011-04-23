@@ -13,6 +13,8 @@ using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 using OpenTK.Graphics;
+using System.Reflection;
+using OpenOrtho.Analysis;
 
 namespace OpenOrtho
 {
@@ -22,6 +24,7 @@ namespace OpenOrtho
 
         bool loaded;
         float scale;
+        SpriteFont font;
         Camera2D camera;
         Texture2D background;
         SpriteBatch spriteBatch;
@@ -46,12 +49,20 @@ namespace OpenOrtho
             aboutBox = new AboutBox();
         }
 
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (background != null) background.Dispose();
+            base.OnFormClosed(e);
+        }
+
         void LoadProject()
         {
             if (background != null) background.Dispose();
 
             background = Texture2D.FromFile(project.Radiograph);
             UpdateScale();
+            analysisPropertyGrid.SelectedObject = project;
+            analysisPropertyGrid.Enabled = true;
         }
 
         void UpdateScale()
@@ -59,21 +70,26 @@ namespace OpenOrtho
             if (background != null)
             {
                 scale = (float)glControl.Height / (float)background.Height;
-                spriteBatch.PixelsPerMeter = project.PixelsPerMeter * scale;
+                spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter * scale;
             }
+        }
+
+        void ResetCamera()
+        {
+            camera.Zoom = 1;
+            camera.Position = Vector2.Zero;
         }
 
         void UpdateModel(float time)
         {
             camera.Zoom += time * camera.Zoom * (keyZoomIn ? 1f : keyZoomOut ? -1f : 0);
-            camera.Position += time / scale * new Vector2(
-                keyLeft ? -2f : keyRight ? 2f : 0,
-                keyDown ? -2f : keyUp ? 2f : 0);
+            camera.Position += time / spriteBatch.PixelsPerMeter * new Vector2(
+                keyLeft ? -200f : keyRight ? 200f : 0,
+                keyDown ? -200f : keyUp ? 200f : 0);
 
             if (keyReset)
             {
-                camera.Zoom = 1;
-                camera.Position = Vector2.Zero;
+                ResetCamera();
             }
         }
 
@@ -95,7 +111,21 @@ namespace OpenOrtho
 
                 if (project.Analysis != null)
                 {
-                    spriteBatch.DrawVertices(project.Analysis.Points, BeginMode.Points, Color4.Red, 3);
+                    var points = project.Analysis.Points;
+                    spriteBatch.DrawVertices(points.Select(point => point.Measurement), BeginMode.Points, Color4.Red, 3);
+
+                    spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
+                                             let distanceMeasurement = measurement as CephalometricDistanceMeasurement
+                                             where distanceMeasurement != null &&
+                                                   !string.IsNullOrEmpty(distanceMeasurement.Point0) &&
+                                                   !string.IsNullOrEmpty(distanceMeasurement.Point1)
+                                             from pointName in new[] { distanceMeasurement.Point0, distanceMeasurement.Point1 }
+                                             select points[pointName].Measurement, BeginMode.Lines, Color4.Violet, 3);
+
+                    foreach (var point in points)
+                    {
+                        spriteBatch.DrawString(font, point.Name, point.Measurement, 0, Vector2.One, Color4.Red);
+                    }
                 }
             }
 
@@ -120,6 +150,8 @@ namespace OpenOrtho
 
         private void glControl_Load(object sender, EventArgs e)
         {
+            scaleRefs = new List<Vector2>(2);
+
             clock = new Stopwatch();
             clock.Start();
 
@@ -128,6 +160,9 @@ namespace OpenOrtho
             scale = 1;
             camera = new Camera2D();
             spriteBatch = new SpriteBatch(glControl.Width, glControl.Height);
+
+            var fontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("OpenOrtho.Resources.LiberationMono-Regular.spf");
+            font = SpriteFont.FromStream(fontStream);
 
             Application.Idle += new EventHandler(Application_Idle);
             loaded = true;
@@ -199,7 +234,6 @@ namespace OpenOrtho
                 LoadProject();
 
                 setScale = true;
-                scaleRefs = new List<Vector2>(2);
             }
         }
 
@@ -207,6 +241,7 @@ namespace OpenOrtho
         {
             if (openProjectDialog.ShowDialog(this) == DialogResult.OK)
             {
+                saveProjectDialog.FileName = openProjectDialog.FileName;
                 using (var reader = XmlReader.Create(openProjectDialog.FileName))
                 {
                     var serializer = new XmlSerializer(typeof(OrthoProject));
@@ -245,17 +280,20 @@ namespace OpenOrtho
         {
             if (project == null) return;
 
-            if (setScale)
+            if (setScale && scaleRefs.Count < scaleRefs.Capacity)
             {
                 var point = PickModelPoint();
-
                 commandExecutor.Execute(
-                    () => scaleRefs.Add(point),
-                    () => scaleRefs.RemoveAt(scaleRefs.Count - 1));
+                    () => { scaleRefs.Add(point); setScaleButton.Enabled = scaleNumericUpDown.Enabled = scaleRefs.Count == scaleRefs.Capacity; },
+                    () => { scaleRefs.RemoveAt(scaleRefs.Count - 1); setScaleButton.Enabled = scaleNumericUpDown.Enabled = false; });
             }
             else if (project.Analysis != null)
             {
-                var point = PickModelPoint();
+                var point = new CephalometricPoint
+                {
+                    Name = "Point" + project.Analysis.Points.Count,
+                    Measurement = PickModelPoint()
+                };
 
                 commandExecutor.Execute(
                     () => project.Analysis.Points.Add(point),
@@ -284,6 +322,22 @@ namespace OpenOrtho
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             commandExecutor.Redo();
+        }
+
+        private void setScaleButton_Click(object sender, EventArgs e)
+        {
+            var scaleLength = (scaleRefs[0] - scaleRefs[1]).Length;
+            project.PixelsPerMillimeter = scaleLength / (float)scaleNumericUpDown.Value;
+            UpdateScale();
+            ResetCamera();
+            analysisPropertyGrid.Refresh();
+
+            commandExecutor.Execute(() =>
+            {
+                scaleRefs.Clear();
+                setScale = false;
+                setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
+            }, null);
         }
     }
 }

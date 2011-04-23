@@ -80,9 +80,12 @@
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.scaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.setScaleButton = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.analysisPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -91,9 +94,10 @@
             this.toolStripContainer.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.scaleNumericUpDown)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // openProjectDialog
@@ -386,7 +390,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 79.62185F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.37815F));
             this.tableLayoutPanel1.Controls.Add(this.glControl, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -548,32 +552,77 @@
             this.openImageDialog.Filter = "Image files (*.bmp; *.jpeg; *.jpg; *.png)|*.bmp; *.jpeg; *.jpg; *.png|All files|*" +
                 ".*";
             // 
-            // flowLayoutPanel1
+            // tableLayoutPanel2
             // 
-            this.flowLayoutPanel1.Controls.Add(this.groupBox1);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(382, 3);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(91, 247);
-            this.flowLayoutPanel1.TabIndex = 1;
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.groupBox1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(382, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34.0081F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65.99191F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(91, 247);
+            this.tableLayoutPanel2.TabIndex = 1;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.numericUpDown1);
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.setScaleButton);
+            this.groupBox1.Controls.Add(this.scaleNumericUpDown);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(81, 49);
-            this.groupBox1.TabIndex = 0;
+            this.groupBox1.Size = new System.Drawing.Size(85, 77);
+            this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Scale (mm)";
             // 
-            // numericUpDown1
+            // scaleNumericUpDown
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(7, 20);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDown1.TabIndex = 0;
+            this.scaleNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.scaleNumericUpDown.DecimalPlaces = 1;
+            this.scaleNumericUpDown.Enabled = false;
+            this.scaleNumericUpDown.Location = new System.Drawing.Point(7, 20);
+            this.scaleNumericUpDown.Name = "scaleNumericUpDown";
+            this.scaleNumericUpDown.Size = new System.Drawing.Size(72, 20);
+            this.scaleNumericUpDown.TabIndex = 0;
+            // 
+            // setScaleButton
+            // 
+            this.setScaleButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.setScaleButton.Enabled = false;
+            this.setScaleButton.Location = new System.Drawing.Point(7, 47);
+            this.setScaleButton.Name = "setScaleButton";
+            this.setScaleButton.Size = new System.Drawing.Size(72, 23);
+            this.setScaleButton.TabIndex = 1;
+            this.setScaleButton.Text = "Set";
+            this.setScaleButton.UseVisualStyleBackColor = true;
+            this.setScaleButton.Click += new System.EventHandler(this.setScaleButton_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.analysisPropertyGrid);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(3, 87);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(85, 157);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Analysis";
+            // 
+            // analysisPropertyGrid
+            // 
+            this.analysisPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.analysisPropertyGrid.Enabled = false;
+            this.analysisPropertyGrid.Location = new System.Drawing.Point(3, 16);
+            this.analysisPropertyGrid.Name = "analysisPropertyGrid";
+            this.analysisPropertyGrid.Size = new System.Drawing.Size(79, 138);
+            this.analysisPropertyGrid.TabIndex = 0;
             // 
             // commandExecutor
             // 
@@ -603,9 +652,10 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.scaleNumericUpDown)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -664,9 +714,12 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private CommandExecutor commandExecutor;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Button setScaleButton;
+        private System.Windows.Forms.NumericUpDown scaleNumericUpDown;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.PropertyGrid analysisPropertyGrid;
 
     }
 }

@@ -11,7 +11,8 @@
     <RootNamespace>OpenOrtho</RootNamespace>
     <AssemblyName>OpenOrtho</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -38,6 +39,7 @@
     <Reference Include="OpenTK.GLControl, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,8 +56,21 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="CephalometricAnalysis.cs" />
-    <Compile Include="CephalometricTemplate.cs" />
+    <Compile Include="AnalysisEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AnalysisEditorForm.Designer.cs">
+      <DependentUpon>AnalysisEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Analysis\CephalometricAnalysis.cs" />
+    <Compile Include="Analysis\CephalometricAngleMeasurement.cs" />
+    <Compile Include="Analysis\CephalometricDistanceMeasurement.cs" />
+    <Compile Include="Analysis\CephalometricLineDistanceMeasurement.cs" />
+    <Compile Include="Analysis\CephalometricMeasurement.cs" />
+    <Compile Include="Analysis\CephalometricMeasurementCollection.cs" />
+    <Compile Include="Analysis\CephalometricPoint.cs" />
+    <Compile Include="Analysis\CephalometricPointCollection.cs" />
+    <Compile Include="Analysis\CephalometricTemplate.cs" />
     <Compile Include="CommandExecutor.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -73,8 +88,12 @@
     <Compile Include="OrthoProject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AnalysisEditorForm.resx">
+      <DependentUpon>AnalysisEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -87,7 +106,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Resources\LiberationMono-Regular.spf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

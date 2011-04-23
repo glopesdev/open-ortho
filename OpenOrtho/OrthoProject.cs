@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
+using OpenOrtho.Analysis;
 
 namespace OpenOrtho
 {
@@ -9,14 +11,15 @@ namespace OpenOrtho
     {
         public OrthoProject()
         {
-            PixelsPerMeter = 100;
+            PixelsPerMillimeter = 1;
             Analysis = new CephalometricAnalysis();
         }
 
         public string Radiograph { get; set; }
 
-        public float PixelsPerMeter { get; set; }
+        public float PixelsPerMillimeter { get; set; }
 
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public CephalometricAnalysis Analysis { get; set; }
     }
 }
