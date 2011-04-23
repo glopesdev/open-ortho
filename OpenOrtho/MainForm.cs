@@ -141,7 +141,7 @@ namespace OpenOrtho
             RenderModel();
         }
 
-        private void openRadiograph_Click(object sender, EventArgs e)
+        private void openRadiographToolStripButton_Click(object sender, EventArgs e)
         {
             if (openImageDialog.ShowDialog(this) == DialogResult.OK)
             {
