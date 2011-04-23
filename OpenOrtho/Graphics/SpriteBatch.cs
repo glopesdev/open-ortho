@@ -81,7 +81,7 @@ namespace OpenOrtho.Graphics
             Draw(texture, new RectangleF(-halfWidth, -halfHeight, texture.Width, texture.Height));
         }
 
-        public void DrawVertices(List<Vector2> vertices, BeginMode drawMode, Color4 color, float size)
+        public void DrawVertices(IEnumerable<Vector2> vertices, BeginMode drawMode, Color4 color, float size)
         {
             LoadView();
 
@@ -91,9 +91,9 @@ namespace OpenOrtho.Graphics
             GL.Disable(EnableCap.Texture2D);
             GL.Begin(drawMode);
 
-            for (int i = 0; i < vertices.Count; i++)
+            foreach (var vertex in vertices)
             {
-                GL.Vertex2(vertices[i] * PixelsPerMeter);
+                GL.Vertex2(vertex * PixelsPerMeter);
             }
 
             GL.End();
@@ -123,6 +123,7 @@ namespace OpenOrtho.Graphics
             var glyphs = font.Glyphs;
             var spacing = font.Spacing;
             var lineSpacing = font.LineSpacing;
+            GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, font.Handle);
 
             GL.Color4(color);
