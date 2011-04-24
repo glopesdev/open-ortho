@@ -67,6 +67,7 @@ namespace OpenOrtho
 
             background = Texture2D.FromFile(project.Radiograph);
             UpdateScale();
+            UpdateStatus();
             analysisPropertyGrid.SelectedObject = project;
             analysisPropertyGrid.Enabled = true;
         }
@@ -78,6 +79,25 @@ namespace OpenOrtho
                 scale = (float)glControl.Height / (float)background.Height;
                 spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter * scale;
             }
+        }
+
+        void UpdateStatus()
+        {
+            var nextPlacement = project.Analysis.Points.FirstOrDefault(p => !p.Placed);
+
+            if (setScale)
+            {
+                if (scaleRefs.Count < 2)
+                {
+                    placementToolStripStatusLabel.Text = "Place scale reference " + (scaleRefs.Count + 1);
+                }
+                else placementToolStripStatusLabel.Text = "Set scale length";
+            }
+            else if (nextPlacement != null)
+            {
+                placementToolStripStatusLabel.Text = "Place point: " + nextPlacement.Name;
+            }
+            else placementToolStripStatusLabel.Text = "Ready";
         }
 
         void ResetCamera()
@@ -114,15 +134,11 @@ namespace OpenOrtho
                     var drawMode = scaleRefs.Count == scaleRefs.Capacity ? BeginMode.LineStrip : BeginMode.Points;
                     spriteBatch.DrawVertices(scaleRefs, drawMode, Color4.Turquoise, 3);
                 }
-
-                if (project.Analysis != null)
+                else if (project.Analysis != null)
                 {
                     var points = project.Analysis.Points;
-                    spriteBatch.DrawVertices(from point in points
-                                             where point.Placed
-                                             select point.Measurement, BeginMode.Points, Color4.Red, 3);
-
-                    if (linesToolStripMenuItem.Checked)
+                    var missingPoints = points.FirstOrDefault(p => !p.Placed) != null;
+                    if (linesToolStripMenuItem.Checked && !missingPoints)
                     {
                         spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
                                                  let distanceMeasurement = measurement as CephalometricDistanceMeasurement
@@ -136,21 +152,69 @@ namespace OpenOrtho
                                                  select point, BeginMode.Lines, Color4.Violet, 3);
                     }
 
-                    if (pointLineDistancesToolStripMenuItem.Checked)
+                    if (pointLineDistancesToolStripMenuItem.Checked && !missingPoints)
                     {
-                        spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
-                                                 let lineDistanceMeasurement = measurement as CephalometricLineDistanceMeasurement
-                                                 where lineDistanceMeasurement != null &&
-                                                       !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
-                                                       !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
-                                                       !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
-                                                 let point0 = points[lineDistanceMeasurement.Point]
-                                                 let line0 = points[lineDistanceMeasurement.Line0]
-                                                 let line1 = points[lineDistanceMeasurement.Line1]
-                                                 where point0.Placed && line0.Placed && line1.Placed
-                                                 from point in new[] { point0.Measurement, Utilities.PointOnLine(point0.Measurement, line0.Measurement, line1.Measurement) }
+                        var measurements = from measurement in project.Analysis.Measurements
+                                           let lineDistanceMeasurement = measurement as CephalometricLineDistanceMeasurement
+                                           where lineDistanceMeasurement != null &&
+                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
+                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
+                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
+                                           let point = points[lineDistanceMeasurement.Point]
+                                           let line0 = points[lineDistanceMeasurement.Line0]
+                                           let line1 = points[lineDistanceMeasurement.Line1]
+                                           where point.Placed && line0.Placed && line1.Placed
+                                           select new
+                                           {
+                                               p = point.Measurement,
+                                               l0 = line0.Measurement,
+                                               l1 = line1.Measurement,
+                                               lp = Utilities.PointOnLine(point.Measurement, line0.Measurement, line1.Measurement)
+                                           };
+
+                        spriteBatch.DrawVertices(from m in measurements
+                                                 from point in new[] { m.lp, Utilities.ClosestOnLine(m.lp, m.l0, m.l1) }
+                                                 select point, BeginMode.Lines, Color4.Orange, 3);
+
+                        spriteBatch.DrawVertices(from m in measurements
+                                                 from point in new[] { m.p, m.lp }
                                                  select point, BeginMode.Lines, Color4.Blue, 3);
                     }
+
+                    if (anglesToolStripMenuItem.Checked && !missingPoints)
+                    {
+                        var measurements = from measurement in project.Analysis.Measurements
+                                           let angleMeasurement = measurement as CephalometricAngleMeasurement
+                                           where angleMeasurement != null &&
+                                                 !string.IsNullOrEmpty(angleMeasurement.PointA0) &&
+                                                 !string.IsNullOrEmpty(angleMeasurement.PointA1) &&
+                                                 !string.IsNullOrEmpty(angleMeasurement.PointB0) &&
+                                                 !string.IsNullOrEmpty(angleMeasurement.PointB1)
+                                           let pointA0 = points[angleMeasurement.PointA0]
+                                           let pointA1 = points[angleMeasurement.PointA1]
+                                           let pointB0 = points[angleMeasurement.PointB0]
+                                           let pointB1 = points[angleMeasurement.PointB1]
+                                           where pointA0.Placed && pointA1.Placed && pointB0.Placed && pointB1.Placed
+                                           let intersection = Utilities.LineIntersection(pointA0.Measurement, pointA1.Measurement, pointB0.Measurement, pointB1.Measurement)
+                                           where intersection.HasValue
+                                           select new
+                                           {
+                                               pA0 = pointA0.Measurement,
+                                               pA1 = pointA1.Measurement,
+                                               pB0 = pointB0.Measurement,
+                                               pB1 = pointB1.Measurement,
+                                               intersection = intersection.Value,
+                                               angle = angleMeasurement.Measure(points)
+                                           };
+
+                        spriteBatch.DrawVertices(from m in measurements
+                                                 from point in new[] { m.intersection, Utilities.ClosestOnLine(m.intersection, m.pA0, m.pA1), m.intersection, Utilities.ClosestOnLine(m.intersection, m.pB0, m.pB1) }
+                                                 select point, BeginMode.Lines, Color4.Orange, 3);
+                    }
+
+                    spriteBatch.DrawVertices(from point in points
+                                             where point.Placed
+                                             select point.Measurement, BeginMode.Points, Color4.Red, 3);
 
                     if (pointNamesToolStripMenuItem.Checked)
                     {
@@ -158,6 +222,14 @@ namespace OpenOrtho
                         {
                             if (!point.Placed) continue;
                             spriteBatch.DrawString(font, point.Name, point.Measurement, 0, Vector2.One, Color4.Red);
+                        }
+                    }
+                    else
+                    {
+                        var closestPoint = ClosestPoint(PickModelPoint());
+                        if (closestPoint != null)
+                        {
+                            spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, Vector2.One, Color4.Red);
                         }
                     }
                 }
@@ -180,6 +252,15 @@ namespace OpenOrtho
             Vector3.Transform(ref position, ref view, out position);
 
             return new Vector2(position.X, position.Y);
+        }
+
+        CephalometricPoint ClosestPoint(Vector2 measurement)
+        {
+            return (from p in project.Analysis.Points
+                    let distance = (measurement - p.Measurement).Length
+                    where distance < 1 * spriteBatch.PixelsPerMeter
+                    orderby distance
+                    select p).FirstOrDefault();
         }
 
         private void glControl_Load(object sender, EventArgs e)
@@ -265,9 +346,8 @@ namespace OpenOrtho
             {
                 project = new OrthoProject();
                 project.Radiograph = openImageDialog.FileName;
-                LoadProject();
-
                 setScale = true;
+                LoadProject();
             }
         }
 
@@ -318,8 +398,8 @@ namespace OpenOrtho
             {
                 var point = PickModelPoint();
                 commandExecutor.Execute(
-                    () => { scaleRefs.Add(point); setScaleButton.Enabled = scaleNumericUpDown.Enabled = scaleRefs.Count == scaleRefs.Capacity; },
-                    () => { scaleRefs.RemoveAt(scaleRefs.Count - 1); setScaleButton.Enabled = scaleNumericUpDown.Enabled = false; });
+                    () => { scaleRefs.Add(point); setScaleButton.Enabled = scaleNumericUpDown.Enabled = scaleRefs.Count == scaleRefs.Capacity; UpdateStatus(); },
+                    () => { scaleRefs.RemoveAt(scaleRefs.Count - 1); setScaleButton.Enabled = scaleNumericUpDown.Enabled = false; UpdateStatus(); });
             }
             else if (project.Analysis != null)
             {
@@ -345,8 +425,8 @@ namespace OpenOrtho
                         var prevMeasurement = point.Measurement;
 
                         commandExecutor.Execute(
-                            () => { point.Measurement = measurement; point.Placed = true; },
-                            () => { point.Measurement = prevMeasurement; point.Placed = false; });
+                            () => { point.Measurement = measurement; point.Placed = true; UpdateStatus(); },
+                            () => { point.Measurement = prevMeasurement; point.Placed = false; UpdateStatus(); });
                     }
                 }
             }
@@ -388,6 +468,7 @@ namespace OpenOrtho
                 scaleRefs.Clear();
                 setScale = false;
                 setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
+                UpdateStatus();
             }, null);
         }
 
@@ -407,6 +488,7 @@ namespace OpenOrtho
                     var serializer = new XmlSerializer(typeof(CephalometricAnalysis));
                     project.Analysis = (CephalometricAnalysis)serializer.Deserialize(reader);
                     analysisPropertyGrid.Refresh();
+                    UpdateStatus();
                 }
             }
         }
@@ -422,12 +504,7 @@ namespace OpenOrtho
                 var measurement = PickModelPoint();
                 if (!fixPoint)
                 {
-                    var point = (from p in project.Analysis.Points
-                                 let distance = (measurement - p.Measurement).Length
-                                 where distance < 1 * spriteBatch.PixelsPerMeter
-                                 orderby distance
-                                 select p).FirstOrDefault();
-
+                    var point = ClosestPoint(measurement);
                     if (point != null)
                     {
                         originalMeasurement = point.Measurement;
@@ -437,6 +514,18 @@ namespace OpenOrtho
                 }
                 else selectedPoint.Measurement = measurement;
             }
+        }
+
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (printDialog.ShowDialog(this) == DialogResult.OK)
+            {
+            }
+        }
+
+        private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            printPreviewDialog.ShowDialog(this);
         }
     }
 }
