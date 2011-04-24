@@ -54,6 +54,7 @@
             this.selectAnalysisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pointLineDistancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.linesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analysisEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,13 +92,17 @@
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.openAnalysisDialog = new System.Windows.Forms.OpenFileDialog();
+            this.anglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.printDialog = new System.Windows.Forms.PrintDialog();
+            this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
-            this.pointLineDistancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer.ContentPanel.SuspendLayout();
             this.toolStripContainer.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -201,6 +206,7 @@
             this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.printToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.printToolStripMenuItem.Text = "&Print";
+            this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // printPreviewToolStripMenuItem
             // 
@@ -209,6 +215,7 @@
             this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
             this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
+            this.printPreviewToolStripMenuItem.Click += new System.EventHandler(this.printPreviewToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -303,19 +310,27 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pointNamesToolStripMenuItem,
             this.pointLineDistancesToolStripMenuItem,
-            this.linesToolStripMenuItem});
+            this.linesToolStripMenuItem,
+            this.anglesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // pointNamesToolStripMenuItem
             // 
-            this.pointNamesToolStripMenuItem.Checked = true;
             this.pointNamesToolStripMenuItem.CheckOnClick = true;
-            this.pointNamesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.pointNamesToolStripMenuItem.Name = "pointNamesToolStripMenuItem";
             this.pointNamesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.pointNamesToolStripMenuItem.Text = "Point &Names";
+            // 
+            // pointLineDistancesToolStripMenuItem
+            // 
+            this.pointLineDistancesToolStripMenuItem.Checked = true;
+            this.pointLineDistancesToolStripMenuItem.CheckOnClick = true;
+            this.pointLineDistancesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.pointLineDistancesToolStripMenuItem.Name = "pointLineDistancesToolStripMenuItem";
+            this.pointLineDistancesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.pointLineDistancesToolStripMenuItem.Text = "Point-Line &Distances";
             // 
             // linesToolStripMenuItem
             // 
@@ -423,6 +438,8 @@
             // statusStrip
             // 
             this.statusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.placementToolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 0);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(476, 22);
@@ -590,6 +607,7 @@
             this.printToolStripButton.Name = "printToolStripButton";
             this.printToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.printToolStripButton.Text = "&Print";
+            this.printToolStripButton.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
@@ -673,18 +691,38 @@
             // 
             this.openAnalysisDialog.Filter = "OpenOrtho Analysis (*.cepha)|*.cepha|All files|*.*";
             // 
+            // anglesToolStripMenuItem
+            // 
+            this.anglesToolStripMenuItem.Checked = true;
+            this.anglesToolStripMenuItem.CheckOnClick = true;
+            this.anglesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.anglesToolStripMenuItem.Name = "anglesToolStripMenuItem";
+            this.anglesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.anglesToolStripMenuItem.Text = "&Angles";
+            // 
+            // placementToolStripStatusLabel
+            // 
+            this.placementToolStripStatusLabel.Name = "placementToolStripStatusLabel";
+            this.placementToolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.placementToolStripStatusLabel.Text = "Ready";
+            // 
+            // printDialog
+            // 
+            this.printDialog.UseEXDialog = true;
+            // 
+            // printPreviewDialog
+            // 
+            this.printPreviewDialog.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.printPreviewDialog.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.printPreviewDialog.ClientSize = new System.Drawing.Size(400, 300);
+            this.printPreviewDialog.Enabled = true;
+            this.printPreviewDialog.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog.Icon")));
+            this.printPreviewDialog.Name = "printPreviewDialog";
+            this.printPreviewDialog.Visible = false;
+            // 
             // commandExecutor
             // 
             this.commandExecutor.StatusChanged += new System.EventHandler(this.commandExecutor_StatusChanged);
-            // 
-            // pointLineDistancesToolStripMenuItem
-            // 
-            this.pointLineDistancesToolStripMenuItem.Checked = true;
-            this.pointLineDistancesToolStripMenuItem.CheckOnClick = true;
-            this.pointLineDistancesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.pointLineDistancesToolStripMenuItem.Name = "pointLineDistancesToolStripMenuItem";
-            this.pointLineDistancesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.pointLineDistancesToolStripMenuItem.Text = "Point-Line &Distances";
             // 
             // MainForm
             // 
@@ -707,6 +745,8 @@
             this.toolStripContainer.TopToolStripPanel.PerformLayout();
             this.toolStripContainer.ResumeLayout(false);
             this.toolStripContainer.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -784,6 +824,10 @@
         private System.Windows.Forms.ToolStripMenuItem pointNamesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem linesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pointLineDistancesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem anglesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel placementToolStripStatusLabel;
+        private System.Windows.Forms.PrintDialog printDialog;
+        private System.Windows.Forms.PrintPreviewDialog printPreviewDialog;
 
     }
 }
