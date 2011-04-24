@@ -7,6 +7,11 @@ namespace OpenOrtho.Analysis
 {
     public class CephalometricDistanceMeasurement : CephalometricMeasurement
     {
+        public override string Units
+        {
+            get { return "mm"; }
+        }
+
         public string Point0 { get; set; }
 
         public string Point1 { get; set; }

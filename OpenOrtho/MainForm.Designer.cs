@@ -56,10 +56,9 @@
             this.pointNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointLineDistancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.linesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.anglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analysisEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.customizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.indexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,8 +67,9 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.glControl = new OpenTK.GLControl();
+            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.setScaleButton = new System.Windows.Forms.Button();
@@ -92,10 +92,9 @@
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.openAnalysisDialog = new System.Windows.Forms.OpenFileDialog();
-            this.anglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
+            this.printDocument = new System.Drawing.Printing.PrintDocument();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -227,6 +226,7 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -248,7 +248,7 @@
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.undoToolStripMenuItem.Text = "&Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -257,51 +257,54 @@
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redoToolStripMenuItem.Text = "&Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(148, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
             // cutToolStripMenuItem
             // 
+            this.cutToolStripMenuItem.Enabled = false;
             this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
             this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.cutToolStripMenuItem.Text = "Cu&t";
             // 
             // copyToolStripMenuItem
             // 
+            this.copyToolStripMenuItem.Enabled = false;
             this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
             this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             // 
             // pasteToolStripMenuItem
             // 
+            this.pasteToolStripMenuItem.Enabled = false;
             this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
             this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pasteToolStripMenuItem.Text = "&Paste";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(148, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
             // 
             // selectAnalysisToolStripMenuItem
             // 
             this.selectAnalysisToolStripMenuItem.Name = "selectAnalysisToolStripMenuItem";
-            this.selectAnalysisToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.selectAnalysisToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.selectAnalysisToolStripMenuItem.Text = "Select &Analysis";
             this.selectAnalysisToolStripMenuItem.Click += new System.EventHandler(this.selectAnalysisToolStripMenuItem_Click);
             // 
@@ -341,12 +344,19 @@
             this.linesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.linesToolStripMenuItem.Text = "&Lines";
             // 
+            // anglesToolStripMenuItem
+            // 
+            this.anglesToolStripMenuItem.Checked = true;
+            this.anglesToolStripMenuItem.CheckOnClick = true;
+            this.anglesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.anglesToolStripMenuItem.Name = "anglesToolStripMenuItem";
+            this.anglesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.anglesToolStripMenuItem.Text = "&Angles";
+            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.analysisEditorToolStripMenuItem,
-            this.customizeToolStripMenuItem,
-            this.optionsToolStripMenuItem});
+            this.analysisEditorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -357,18 +367,6 @@
             this.analysisEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.analysisEditorToolStripMenuItem.Text = "&Analysis Editor";
             this.analysisEditorToolStripMenuItem.Click += new System.EventHandler(this.analysisEditorToolStripMenuItem_Click);
-            // 
-            // customizeToolStripMenuItem
-            // 
-            this.customizeToolStripMenuItem.Name = "customizeToolStripMenuItem";
-            this.customizeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.customizeToolStripMenuItem.Text = "&Customize";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.optionsToolStripMenuItem.Text = "&Options";
             // 
             // helpToolStripMenuItem
             // 
@@ -384,31 +382,34 @@
             // 
             // contentsToolStripMenuItem
             // 
+            this.contentsToolStripMenuItem.Enabled = false;
             this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
-            this.contentsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.contentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.contentsToolStripMenuItem.Text = "&Contents";
             // 
             // indexToolStripMenuItem
             // 
+            this.indexToolStripMenuItem.Enabled = false;
             this.indexToolStripMenuItem.Name = "indexToolStripMenuItem";
-            this.indexToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.indexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.indexToolStripMenuItem.Text = "&Index";
             // 
             // searchToolStripMenuItem
             // 
+            this.searchToolStripMenuItem.Enabled = false;
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.searchToolStripMenuItem.Text = "&Search";
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(119, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(149, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "&About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -444,6 +445,12 @@
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(476, 22);
             this.statusStrip.TabIndex = 0;
+            // 
+            // placementToolStripStatusLabel
+            // 
+            this.placementToolStripStatusLabel.Name = "placementToolStripStatusLabel";
+            this.placementToolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.placementToolStripStatusLabel.Text = "Ready";
             // 
             // tableLayoutPanel1
             // 
@@ -566,7 +573,7 @@
             this.helpToolStripButton});
             this.menuToolStrip.Location = new System.Drawing.Point(3, 24);
             this.menuToolStrip.Name = "menuToolStrip";
-            this.menuToolStrip.Size = new System.Drawing.Size(260, 25);
+            this.menuToolStrip.Size = new System.Drawing.Size(291, 25);
             this.menuToolStrip.TabIndex = 1;
             // 
             // newToolStripButton
@@ -644,6 +651,7 @@
             // cutToolStripButton
             // 
             this.cutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cutToolStripButton.Enabled = false;
             this.cutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripButton.Image")));
             this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cutToolStripButton.Name = "cutToolStripButton";
@@ -653,6 +661,7 @@
             // copyToolStripButton
             // 
             this.copyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.copyToolStripButton.Enabled = false;
             this.copyToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripButton.Image")));
             this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripButton.Name = "copyToolStripButton";
@@ -662,6 +671,7 @@
             // pasteToolStripButton
             // 
             this.pasteToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.pasteToolStripButton.Enabled = false;
             this.pasteToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripButton.Image")));
             this.pasteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolStripButton.Name = "pasteToolStripButton";
@@ -676,6 +686,7 @@
             // helpToolStripButton
             // 
             this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.helpToolStripButton.Enabled = false;
             this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
             this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.helpToolStripButton.Name = "helpToolStripButton";
@@ -691,21 +702,6 @@
             // 
             this.openAnalysisDialog.Filter = "OpenOrtho Analysis (*.cepha)|*.cepha|All files|*.*";
             // 
-            // anglesToolStripMenuItem
-            // 
-            this.anglesToolStripMenuItem.Checked = true;
-            this.anglesToolStripMenuItem.CheckOnClick = true;
-            this.anglesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.anglesToolStripMenuItem.Name = "anglesToolStripMenuItem";
-            this.anglesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.anglesToolStripMenuItem.Text = "&Angles";
-            // 
-            // placementToolStripStatusLabel
-            // 
-            this.placementToolStripStatusLabel.Name = "placementToolStripStatusLabel";
-            this.placementToolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
-            this.placementToolStripStatusLabel.Text = "Ready";
-            // 
             // printDialog
             // 
             this.printDialog.UseEXDialog = true;
@@ -719,6 +715,11 @@
             this.printPreviewDialog.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog.Icon")));
             this.printPreviewDialog.Name = "printPreviewDialog";
             this.printPreviewDialog.Visible = false;
+            // 
+            // printDocument
+            // 
+            this.printDocument.DocumentName = "analysis";
+            this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
             // 
             // commandExecutor
             // 
@@ -783,8 +784,6 @@
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem customizeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem contentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem indexToolStripMenuItem;
@@ -792,7 +791,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripContainer toolStripContainer;
-        private OpenTK.GLControl glControl;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.OpenFileDialog openImageDialog;
         private System.Windows.Forms.ToolStrip menuToolStrip;
@@ -828,6 +826,8 @@
         private System.Windows.Forms.ToolStripStatusLabel placementToolStripStatusLabel;
         private System.Windows.Forms.PrintDialog printDialog;
         private System.Windows.Forms.PrintPreviewDialog printPreviewDialog;
+        private System.Drawing.Printing.PrintDocument printDocument;
+        private AntiAliasedGLControl glControl;
 
     }
 }
