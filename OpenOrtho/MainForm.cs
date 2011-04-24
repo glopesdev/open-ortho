@@ -39,6 +39,7 @@ namespace OpenOrtho
 
         bool setScale;
         List<Vector2> scaleRefs;
+        List<Vector2> arcPoints;
 
         bool fixPoint;
         Vector2 originalMeasurement;
@@ -198,6 +199,13 @@ namespace OpenOrtho
             prevMouse = Form.MousePosition;
         }
 
+        void Swap(ref Vector2 p0, ref Vector2 p1)
+        {
+            var tmp = p0;
+            p0 = p1;
+            p1 = tmp;
+        }
+
         void RenderModel()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -288,6 +296,39 @@ namespace OpenOrtho
                         spriteBatch.DrawVertices(from m in measurements
                                                  from point in new[] { m.intersection, Utilities.ClosestOnLine(m.intersection, m.pA0, m.pA1), m.intersection, Utilities.ClosestOnLine(m.intersection, m.pB0, m.pB1) }
                                                  select point, BeginMode.Lines, Color4.Orange, 3);
+
+                        foreach (var m in measurements)
+                        {
+                            var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
+                            bool swapA = false;
+                            bool swapB = false;
+
+                            var a0 = m.pA0;
+                            var a1 = m.pA1;
+                            if (Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) != a0) Swap(ref a0, ref a1);
+
+                            var b0 = m.pB0;
+                            var b1 = m.pB1;
+                            if (Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) != b0) Swap(ref b0, ref b1);
+
+                            var dot = Vector2.Dot(a1 - a0, b1 - b0);
+
+                            var dotTest =
+                                swapA && swapB ? dot > 0 : dot < 0;
+
+                            var direction = dotTest ? (a1 - a0) : (b1 - b0);
+                            direction.Normalize();
+
+                            for (int i = 0; i < arcPoints.Capacity; i++)
+                            {
+                                arcPoints.Add(m.intersection + direction * 4);
+                                direction = Utilities.Rotate(direction, angleIncrement);
+                            }
+
+                            spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange, 3);
+                            spriteBatch.DrawString(font, string.Format("{0:F1} {1} {2}", dot, swapA, swapB), m.intersection, 0, Vector2.One, Color4.Red);
+                            arcPoints.Clear();
+                        }
                     }
 
                     spriteBatch.DrawVertices(from point in points
@@ -346,6 +387,7 @@ namespace OpenOrtho
         {
             printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
+            arcPoints = new List<Vector2>(11);
 
             clock = new Stopwatch();
             clock.Start();
