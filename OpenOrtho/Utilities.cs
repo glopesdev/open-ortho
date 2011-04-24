@@ -8,32 +8,30 @@ namespace OpenOrtho
 {
     public static class Utilities
     {
-        public static Vector2 ClosestOnLine(Vector2 point, Vector2 line0, Vector2 line1)
+        public static float LineAngle(Vector3 l1, Vector3 l2)
         {
-            // Order line points
-            if (line0.X > line1.X)
-            {
-                var tmp = line0;
-                line0 = line1;
-                line1 = tmp;
-            }
+            return (float)Math.Acos(Math.Abs(l1.X * l2.X + l1.Y * l2.Y + l1.Z * l2.Z) / (l1.Length * l2.Length));
+        }
 
+        public static Vector2 Rotate(Vector2 vector, float angle)
+        {
+            return Vector2.Transform(vector, Quaternion.FromAxisAngle(Vector3.UnitZ, angle));
+        }
+
+        public static Vector2 ClosestOnLineExclusive(Vector2 point, Vector2 line0, Vector2 line1)
+        {
             var diff0 = point - line0;
             var diff1 = point - line1;
+            return diff0.Length < diff1.Length ? line0 : line1;
+        }
 
-            // To the right of p0
-            if (diff0.X > 0)
-            {
-                // To the right of p1
-                if (diff1.X > 0) return line1;
-                else return point;
-            }
-            else // To the left of p0
-            {
-                // To the right of p1
-                if (diff1.X > 0) return point;
-                else return line0;
-            }
+        public static Vector2 ClosestOnLine(Vector2 point, Vector2 line0, Vector2 line1)
+        {
+            var diff0 = point - line0;
+            var diff1 = point - line1;
+            var ldiff0 = diff0.Length - 0.1f;
+            var ldiff1 = diff1.Length - 0.1f;
+            return (diff0 + diff1).Length < (ldiff0 + ldiff1) ? point : ldiff0 < ldiff1 ? line0 : line1;
         }
 
         public static Vector2? LineIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
