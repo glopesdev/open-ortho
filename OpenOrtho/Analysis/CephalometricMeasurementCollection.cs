@@ -6,9 +6,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Xml.Serialization;
 
 namespace OpenOrtho.Analysis
 {
+    [XmlInclude(typeof(CephalometricAngleMeasurement))]
+    [XmlInclude(typeof(CephalometricDistanceMeasurement))]
+    [XmlInclude(typeof(CephalometricLineDistanceMeasurement))]
     [Editor(typeof(CephalometricMeasurementCollectionEditor), typeof(UITypeEditor))]
     public class CephalometricMeasurementCollection : KeyedCollection<string, CephalometricMeasurement>
     {
