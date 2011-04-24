@@ -13,17 +13,16 @@ namespace OpenOrtho.Analysis
         private readonly CephalometricPointCollection points = new CephalometricPointCollection();
         private readonly CephalometricMeasurementCollection measurements = new CephalometricMeasurementCollection();
 
-        [Browsable(false)]
+        [Category("General")]
         public string Name { get; set; }
 
+        [Category("Analysis")]
         public CephalometricPointCollection Points
         {
             get { return this.points; }
         }
 
-        [XmlArrayItem("Angle", Type = typeof(CephalometricAngleMeasurement))]
-        [XmlArrayItem("Distance", Type = typeof(CephalometricDistanceMeasurement))]
-        [XmlArrayItem("LineDistance", Type = typeof(CephalometricLineDistanceMeasurement))]
+        [Category("Analysis")]
         public CephalometricMeasurementCollection Measurements
         {
             get { return this.measurements; }
@@ -31,7 +30,7 @@ namespace OpenOrtho.Analysis
 
         public override string ToString()
         {
-            return this.Name;
+            return string.IsNullOrEmpty(Name) ? "Custom" : Name;
         }
     }
 }

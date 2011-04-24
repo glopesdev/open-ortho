@@ -70,7 +70,6 @@
     <Compile Include="Analysis\CephalometricMeasurementCollection.cs" />
     <Compile Include="Analysis\CephalometricPoint.cs" />
     <Compile Include="Analysis\CephalometricPointCollection.cs" />
-    <Compile Include="Analysis\CephalometricTemplate.cs" />
     <Compile Include="CommandExecutor.cs">
       <SubType>Component</SubType>
     </Compile>
