@@ -9,6 +9,8 @@ namespace OpenOrtho.Analysis
     {
         public string Name { get; set; }
 
+        public abstract string Units { get; }
+
         public abstract float Measure(CephalometricPointCollection points);
     }
 }

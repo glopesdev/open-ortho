@@ -15,12 +15,20 @@ using System.Xml.Serialization;
 using OpenTK.Graphics;
 using System.Reflection;
 using OpenOrtho.Analysis;
+using System.Drawing.Printing;
 
 namespace OpenOrtho
 {
     public partial class MainForm : Form
     {
+        const float MillimetersPerInch = 1.0f / 0.03937f;
+        const float MovementSpeed = 200.0f;
+        const float MinZoom = 1f;
+        const float MaxZoom = 100f;
+
         OrthoProject project;
+        int version;
+        int saveVersion;
 
         bool loaded;
         float scale;
@@ -43,10 +51,14 @@ namespace OpenOrtho
         bool keyReset;
         bool keyZoomIn;
         bool keyZoomOut;
+        Point prevMouse;
 
         Stopwatch clock;
         AboutBox aboutBox;
         AnalysisEditorForm analysisEditor;
+
+        Bitmap screenCapture;
+        float deviceDpiX;
 
         public MainForm()
         {
@@ -55,10 +67,69 @@ namespace OpenOrtho
             analysisEditor = new AnalysisEditorForm();
         }
 
+        bool CheckUnsavedChanges()
+        {
+            if (project != null && saveVersion != version)
+            {
+                var result = MessageBox.Show("Project has unsaved changes. Save project file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.OK)
+                {
+                    saveToolStripMenuItem_Click(this, EventArgs.Empty);
+                }
+                else return result == DialogResult.No;
+            }
+
+            return true;
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            camera.Zoom = Math.Max(MinZoom, Math.Min(MaxZoom, camera.Zoom + 0.001f * camera.Zoom * e.Delta));
+            base.OnMouseWheel(e);
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (!CheckUnsavedChanges()) e.Cancel = true;
+            base.OnFormClosing(e);
+        }
+
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             if (background != null) background.Dispose();
             base.OnFormClosed(e);
+        }
+
+        RectangleF GetRenderRectangle()
+        {
+            var renderWidth = background.Width * scale;
+            return new RectangleF(-renderWidth / 2f, -glControl.Height / 2f, renderWidth, glControl.Height);
+        }
+
+        void CaptureScreen()
+        {
+            using (var graphics = glControl.CreateGraphics())
+            {
+                var renderRectangle = GetRenderRectangle();
+                var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
+                var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
+                screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
+                screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
+
+                var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
+                captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
+                deviceDpiX = graphics.DpiX;
+            }
+        }
+
+        void ResetProjectStatus()
+        {
+            UpdateScale();
+            ResetCamera();
+            UpdateStatus();
+            commandExecutor.Clear();
+            version = 0;
+            saveVersion = version;
         }
 
         void LoadProject()
@@ -66,10 +137,9 @@ namespace OpenOrtho
             if (background != null) background.Dispose();
 
             background = Texture2D.FromFile(project.Radiograph);
-            UpdateScale();
-            UpdateStatus();
             analysisPropertyGrid.SelectedObject = project;
             analysisPropertyGrid.Enabled = true;
+            ResetProjectStatus();
         }
 
         void UpdateScale()
@@ -108,15 +178,24 @@ namespace OpenOrtho
 
         void UpdateModel(float time)
         {
-            camera.Zoom += time * camera.Zoom * (keyZoomIn ? 1f : keyZoomOut ? -1f : 0);
+            camera.Zoom = Math.Max(MinZoom, Math.Min(MaxZoom, camera.Zoom + time * camera.Zoom * (keyZoomIn ? 1f : keyZoomOut ? -1f : 0)));
             camera.Position += time / spriteBatch.PixelsPerMeter * new Vector2(
-                keyLeft ? -200f : keyRight ? 200f : 0,
-                keyDown ? -200f : keyUp ? 200f : 0);
+                keyLeft ? -MovementSpeed : keyRight ? MovementSpeed : 0,
+                keyDown ? -MovementSpeed : keyUp ? MovementSpeed : 0);
+
+            if (Form.MouseButtons == MouseButtons.Right)
+            {
+                camera.Position += MovementSpeed * time / spriteBatch.PixelsPerMeter * new Vector2(
+                    prevMouse.X - Form.MousePosition.X,
+                    Form.MousePosition.Y - prevMouse.Y);
+            }
 
             if (keyReset)
             {
                 ResetCamera();
             }
+
+            prevMouse = Form.MousePosition;
         }
 
         void RenderModel()
@@ -126,8 +205,7 @@ namespace OpenOrtho
 
             if (project != null)
             {
-                var renderWidth = background.Width * scale;
-                spriteBatch.Draw(background, new RectangleF(-renderWidth / 2f, -glControl.Height / 2f, renderWidth, glControl.Height));
+                spriteBatch.Draw(background, GetRenderRectangle());
 
                 if (setScale)
                 {
@@ -216,20 +294,21 @@ namespace OpenOrtho
                                              where point.Placed
                                              select point.Measurement, BeginMode.Points, Color4.Red, 3);
 
+                    var textScale = Vector2.One / camera.Zoom;
                     if (pointNamesToolStripMenuItem.Checked)
                     {
                         foreach (var point in points)
                         {
                             if (!point.Placed) continue;
-                            spriteBatch.DrawString(font, point.Name, point.Measurement, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, point.Name, point.Measurement, 0, textScale, Color4.Red);
                         }
                     }
                     else
                     {
-                        var closestPoint = ClosestPoint(PickModelPoint());
+                        var closestPoint = ClosestPoint(PickModelPoint(), 5);
                         if (closestPoint != null)
                         {
-                            spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
                         }
                     }
                 }
@@ -254,17 +333,18 @@ namespace OpenOrtho
             return new Vector2(position.X, position.Y);
         }
 
-        CephalometricPoint ClosestPoint(Vector2 measurement)
+        CephalometricPoint ClosestPoint(Vector2 measurement, float threshold)
         {
             return (from p in project.Analysis.Points
                     let distance = (measurement - p.Measurement).Length
-                    where distance < 1 * spriteBatch.PixelsPerMeter
+                    where distance < threshold * spriteBatch.PixelsPerMeter
                     orderby distance
                     select p).FirstOrDefault();
         }
 
         private void glControl_Load(object sender, EventArgs e)
         {
+            printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
 
             clock = new Stopwatch();
@@ -342,7 +422,9 @@ namespace OpenOrtho
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (openImageDialog.ShowDialog(this) == DialogResult.OK)
+            if (!CheckUnsavedChanges()) return;
+
+            if (openImageDialog.ShowDialog() == DialogResult.OK)
             {
                 project = new OrthoProject();
                 project.Radiograph = openImageDialog.FileName;
@@ -353,7 +435,9 @@ namespace OpenOrtho
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (openProjectDialog.ShowDialog(this) == DialogResult.OK)
+            if (!CheckUnsavedChanges()) return;
+
+            if (openProjectDialog.ShowDialog() == DialogResult.OK)
             {
                 saveProjectDialog.FileName = openProjectDialog.FileName;
                 using (var reader = XmlReader.Create(openProjectDialog.FileName))
@@ -376,6 +460,7 @@ namespace OpenOrtho
                 {
                     var serializer = new XmlSerializer(typeof(OrthoProject));
                     serializer.Serialize(writer, project);
+                    saveVersion = version;
                 }
             }
         }
@@ -384,7 +469,7 @@ namespace OpenOrtho
         {
             if (project == null) return;
 
-            if (saveProjectDialog.ShowDialog(this) == DialogResult.OK)
+            if (saveProjectDialog.ShowDialog() == DialogResult.OK)
             {
                 saveToolStripMenuItem_Click(this, e);
             }
@@ -434,7 +519,7 @@ namespace OpenOrtho
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            aboutBox.ShowDialog(this);
+            aboutBox.ShowDialog();
         }
 
         private void commandExecutor_StatusChanged(object sender, EventArgs e)
@@ -443,10 +528,12 @@ namespace OpenOrtho
             undoToolStripMenuItem.Enabled = commandExecutor.CanUndo;
             redoToolStripButton.Enabled = commandExecutor.CanRedo;
             redoToolStripMenuItem.Enabled = commandExecutor.CanRedo;
+            version++;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            version -= 2;
             commandExecutor.Undo();
         }
 
@@ -459,29 +546,25 @@ namespace OpenOrtho
         {
             var scaleLength = (scaleRefs[0] - scaleRefs[1]).Length;
             project.PixelsPerMillimeter = scaleLength / (float)scaleNumericUpDown.Value;
-            UpdateScale();
-            ResetCamera();
             analysisPropertyGrid.Refresh();
 
-            commandExecutor.Execute(() =>
-            {
-                scaleRefs.Clear();
-                setScale = false;
-                setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
-                UpdateStatus();
-            }, null);
+            scaleRefs.Clear();
+            setScale = false;
+            setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
+
+            ResetProjectStatus();
         }
 
         private void analysisEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            analysisEditor.ShowDialog(this);
+            analysisEditor.ShowDialog();
         }
 
         private void selectAnalysisToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (project == null) return;
 
-            if (openAnalysisDialog.ShowDialog(this) == DialogResult.OK)
+            if (openAnalysisDialog.ShowDialog() == DialogResult.OK)
             {
                 using (var reader = XmlReader.Create(openAnalysisDialog.FileName))
                 {
@@ -504,7 +587,7 @@ namespace OpenOrtho
                 var measurement = PickModelPoint();
                 if (!fixPoint)
                 {
-                    var point = ClosestPoint(measurement);
+                    var point = ClosestPoint(measurement, 1);
                     if (point != null)
                     {
                         originalMeasurement = point.Measurement;
@@ -518,14 +601,47 @@ namespace OpenOrtho
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (printDialog.ShowDialog(this) == DialogResult.OK)
+            if (project != null)
             {
+                CaptureScreen();
+                printDialog.Document = printDocument;
             }
+            printDialog.ShowDialog();
         }
 
         private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            printPreviewDialog.ShowDialog(this);
+            if (project != null)
+            {
+                CaptureScreen();
+                printPreviewDialog.Document = printDocument;
+            }
+            printPreviewDialog.ShowDialog();
+        }
+
+        private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            var offset = new PointF(e.PageSettings.PrintableArea.X, e.PageSettings.PrintableArea.Y);
+            e.Graphics.DrawImage(screenCapture, offset);
+
+            var analysis = project.Analysis;
+            offset.X += screenCapture.Width / screenCapture.HorizontalResolution * deviceDpiX + 50;
+
+            var reportString = "Measurements:";
+            e.Graphics.DrawString(reportString, Font, Brushes.Black, offset);
+            offset.Y += e.Graphics.MeasureString(reportString, Font).Height * 2;
+
+            foreach (var measurement in analysis.Measurements)
+            {
+                var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(analysis.Points), measurement.Units);
+                e.Graphics.DrawString(readout, Font, Brushes.Black, offset);
+                offset.Y += e.Graphics.MeasureString(readout, Font).Height;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

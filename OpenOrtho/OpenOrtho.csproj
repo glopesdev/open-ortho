@@ -70,6 +70,9 @@
     <Compile Include="Analysis\CephalometricMeasurementCollection.cs" />
     <Compile Include="Analysis\CephalometricPoint.cs" />
     <Compile Include="Analysis\CephalometricPointCollection.cs" />
+    <Compile Include="AntiAliasedGLControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="CommandExecutor.cs">
       <SubType>Component</SubType>
     </Compile>

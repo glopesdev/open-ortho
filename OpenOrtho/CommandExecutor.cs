@@ -23,6 +23,13 @@ namespace OpenOrtho
             get { return currentCommand < history.Count - 1; }
         }
 
+        public void Clear()
+        {
+            history.Clear();
+            currentCommand = -1;
+            OnStatusChanged(EventArgs.Empty);
+        }
+
         public void Execute(Action command, Action undo)
         {
             if (command == null)
@@ -38,14 +45,9 @@ namespace OpenOrtho
                   history.Count - currentCommand
                 );
                 history.Add(new Command(command, undo));
+                OnStatusChanged(EventArgs.Empty);
             }
-            else
-            {
-                history.Clear();
-                currentCommand = -1;
-            }
-
-            OnStatusChanged(EventArgs.Empty);
+            else Clear();
         }
 
         public void Undo()
