@@ -300,23 +300,42 @@ namespace OpenOrtho
                         foreach (var m in measurements)
                         {
                             var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
-                            bool swapA = false;
-                            bool swapB = false;
 
                             var a0 = m.pA0;
                             var a1 = m.pA1;
-                            if (Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) != a0) Swap(ref a0, ref a1);
-
                             var b0 = m.pB0;
                             var b1 = m.pB1;
-                            if (Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) != b0) Swap(ref b0, ref b1);
+
+                            var a0fst = a0.X < a1.X || (a0.X == a1.Y) && a0.Y < a1.Y;
+                            var b0fst = b0.X < b1.X || (b0.X == b1.Y) && b0.Y < b1.Y;
+
+                            var ca0 = Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) == a0;
+                            var cb0 = Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) == b0;
+                            if (!ca0) Swap(ref a0, ref a1);
+                            if (!cb0) Swap(ref b0, ref b1);
 
                             var dot = Vector2.Dot(a1 - a0, b1 - b0);
+                            var dotPositive = dot > 0;
 
-                            var dotTest =
-                                swapA && swapB ? dot > 0 : dot < 0;
-
-                            var direction = dotTest ? (a1 - a0) : (b1 - b0);
+                            var direction = a1 - a0;
+                            if (ca0 && cb0 && dotPositive && a0fst && b0fst ||
+                                ca0 && !cb0 && dotPositive && a0fst && !b0fst ||
+                                ca0 && !cb0 && !dotPositive && a0fst && !b0fst ||
+                                ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
+                                !ca0 && cb0 && !dotPositive && !a0fst && !b0fst ||
+                                !ca0 && cb0 && dotPositive && !a0fst && b0fst ||
+                                !ca0 && !cb0 && !dotPositive && !a0fst && !b0fst ||
+                                !ca0 && !cb0 && dotPositive && !a0fst && !b0fst ||
+                                !ca0 && !cb0 && !dotPositive && !a0fst && b0fst ||
+                                !ca0 && !cb0 && !dotPositive && a0fst && b0fst ||
+                                ca0 && !cb0 && !dotPositive && !a0fst && b0fst)
+                            {
+                                direction = b1 - b0;
+                            }
+                            else if (ca0 && !cb0 && !dotPositive && a0fst && b0fst)
+                            {
+                                direction = m.pA0 - m.pA1;
+                            }
                             direction.Normalize();
 
                             for (int i = 0; i < arcPoints.Capacity; i++)
@@ -326,7 +345,11 @@ namespace OpenOrtho
                             }
 
                             spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange, 3);
-                            spriteBatch.DrawString(font, string.Format("{0:F1} {1} {2}", dot, swapA, swapB), m.intersection, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, string.Format("{0:F1} {1} {2} {3} {4} {5}", dot, ca0, cb0, dotPositive, a0fst, b0fst), m.intersection, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, "A0", m.pA0, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, "A1", m.pA1, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, "B0", m.pB0, 0, Vector2.One, Color4.Red);
+                            spriteBatch.DrawString(font, "B1", m.pB1, 0, Vector2.One, Color4.Red);
                             arcPoints.Clear();
                         }
                     }
@@ -349,7 +372,7 @@ namespace OpenOrtho
                         var closestPoint = ClosestPoint(PickModelPoint(), 5);
                         if (closestPoint != null)
                         {
-                            spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
+                            //spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
                         }
                     }
                 }
