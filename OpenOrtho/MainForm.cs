@@ -294,7 +294,9 @@ namespace OpenOrtho
                                            };
 
                         spriteBatch.DrawVertices(from m in measurements
-                                                 from point in new[] { m.intersection, Utilities.ClosestOnLine(m.intersection, m.pA0, m.pA1), m.intersection, Utilities.ClosestOnLine(m.intersection, m.pB0, m.pB1) }
+                                                 let ca = Utilities.ClosestOnLineExclusive(m.intersection, m.pA0, m.pA1)
+                                                 let cb = Utilities.ClosestOnLineExclusive(m.intersection, m.pB0, m.pB1)
+                                                 from point in new[] { m.intersection + 10 * Vector2.Normalize(m.intersection - ca), ca, m.intersection + 10 * Vector2.Normalize(m.intersection - cb), cb }
                                                  select point, BeginMode.Lines, Color4.Orange, 3);
 
                         foreach (var m in measurements)
@@ -308,33 +310,35 @@ namespace OpenOrtho
 
                             var a0fst = a0.X < a1.X || (a0.X == a1.Y) && a0.Y < a1.Y;
                             var b0fst = b0.X < b1.X || (b0.X == b1.Y) && b0.Y < b1.Y;
-
                             var ca0 = Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) == a0;
                             var cb0 = Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) == b0;
-                            if (!ca0) Swap(ref a0, ref a1);
-                            if (!cb0) Swap(ref b0, ref b1);
 
                             var dot = Vector2.Dot(a1 - a0, b1 - b0);
                             var dotPositive = dot > 0;
 
                             var direction = a1 - a0;
-                            if (ca0 && cb0 && dotPositive && a0fst && b0fst ||
-                                ca0 && !cb0 && dotPositive && a0fst && !b0fst ||
-                                ca0 && !cb0 && !dotPositive && a0fst && !b0fst ||
-                                ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
-                                !ca0 && cb0 && !dotPositive && !a0fst && !b0fst ||
+                            if (ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
+                                ca0 && !cb0 && dotPositive && a0fst && b0fst ||
                                 !ca0 && cb0 && dotPositive && !a0fst && b0fst ||
-                                !ca0 && !cb0 && !dotPositive && !a0fst && !b0fst ||
-                                !ca0 && !cb0 && dotPositive && !a0fst && !b0fst ||
-                                !ca0 && !cb0 && !dotPositive && !a0fst && b0fst ||
-                                !ca0 && !cb0 && !dotPositive && a0fst && b0fst ||
-                                ca0 && !cb0 && !dotPositive && !a0fst && b0fst)
+                                !ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
+                                !ca0 && !cb0 && dotPositive && a0fst && b0fst)
                             {
-                                direction = b1 - b0;
+                                direction = a0 - a1;
                             }
-                            else if (ca0 && !cb0 && !dotPositive && a0fst && b0fst)
+                            else
                             {
-                                direction = m.pA0 - m.pA1;
+                                if (ca0 && cb0 && dotPositive && a0fst && b0fst ||
+                                    !ca0 && cb0 && !dotPositive && !a0fst && b0fst)
+                                {
+                                    direction = b1 - b0;
+                                }
+                                else
+                                {
+                                    if (ca0 && !cb0 && !dotPositive && a0fst && !b0fst)
+                                    {
+                                        direction = b0 - b1;
+                                    }
+                                }
                             }
                             direction.Normalize();
 
