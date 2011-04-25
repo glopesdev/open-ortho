@@ -8,6 +8,23 @@ namespace OpenOrtho
 {
     public static class Utilities
     {
+        public static int CompareClockwise(Vector2 v1, Vector2 v2)
+        {
+            if (v1.X > 0 && v2.X > 0)
+            {
+                if (v1.Y > 0 && v2.Y < 0) return -1;
+                else if (v2.Y > 0 && v1.Y < 0) return 1;
+            }
+
+            return VectorRotation(v1) > VectorRotation(v2) ? -1 : 1;
+        }
+
+        public static float VectorRotation(Vector2 v)
+        {
+            var angle = (float)Math.Atan2(v.Y, v.X);
+            return angle < 0 ? angle + MathHelper.TwoPi : angle;
+        }
+
         public static bool AreEqual(float value1, float value2, float tolerance)
         {
             var diff = value2 - value1;
