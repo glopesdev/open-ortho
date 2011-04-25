@@ -16,6 +16,7 @@ using OpenTK.Graphics;
 using System.Reflection;
 using OpenOrtho.Analysis;
 using System.Drawing.Printing;
+using System.IO;
 
 namespace OpenOrtho
 {
@@ -133,11 +134,12 @@ namespace OpenOrtho
             saveVersion = version;
         }
 
-        void LoadProject()
+        void LoadProject(string projectDir)
         {
             if (background != null) background.Dispose();
 
-            background = Texture2D.FromFile(project.Radiograph);
+            var radiographPath = Path.IsPathRooted(project.Radiograph) ? project.Radiograph : Path.Combine(projectDir, project.Radiograph);
+            background = Texture2D.FromFile(radiographPath);
             analysisPropertyGrid.SelectedObject = project;
             analysisPropertyGrid.Enabled = true;
             ResetProjectStatus();
@@ -488,10 +490,12 @@ namespace OpenOrtho
 
             if (openImageDialog.ShowDialog() == DialogResult.OK)
             {
+                var projectDir = Path.GetDirectoryName(openImageDialog.FileName);
+                saveProjectDialog.InitialDirectory = projectDir;
                 project = new OrthoProject();
                 project.Radiograph = openImageDialog.FileName;
                 setScale = true;
-                LoadProject();
+                LoadProject(projectDir);
             }
         }
 
@@ -506,7 +510,7 @@ namespace OpenOrtho
                 {
                     var serializer = new XmlSerializer(typeof(OrthoProject));
                     project = (OrthoProject)serializer.Deserialize(reader);
-                    LoadProject();
+                    LoadProject(Path.GetDirectoryName(openProjectDialog.FileName));
                 }
             }
         }
@@ -533,6 +537,13 @@ namespace OpenOrtho
 
             if (saveProjectDialog.ShowDialog() == DialogResult.OK)
             {
+                var projectUri = new Uri(saveProjectDialog.FileName);
+                if (Path.IsPathRooted(project.Radiograph))
+                {
+                    var radiographUri = new Uri(project.Radiograph);
+                    radiographUri = projectUri.MakeRelativeUri(radiographUri);
+                    project.Radiograph = radiographUri.ToString();
+                }
                 saveToolStripMenuItem_Click(this, e);
             }
         }
