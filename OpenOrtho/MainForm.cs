@@ -295,19 +295,24 @@ namespace OpenOrtho
 
                         spriteBatch.DrawVertices(from m in measurements
                                                  let ca = Utilities.ClosestOnLineExclusive(m.intersection, m.pA0, m.pA1)
+                                                 let ea = Utilities.ExtensionDirection(m.intersection, m.pA0, m.pA1)
                                                  let cb = Utilities.ClosestOnLineExclusive(m.intersection, m.pB0, m.pB1)
-                                                 from point in new[] { m.intersection + 10 * Vector2.Normalize(m.intersection - ca), ca, m.intersection + 10 * Vector2.Normalize(m.intersection - cb), cb }
+                                                 let eb = Utilities.ExtensionDirection(m.intersection, m.pB0, m.pB1)
+                                                 from point in new[] { m.intersection + ea, ca, m.intersection + eb, cb }
                                                  select point, BeginMode.Lines, Color4.Orange, 3);
 
                         foreach (var m in measurements)
                         {
-                            var angle = MathHelper.DegreesToRadians(m.angle);
-                            var angleIncrement = angle / (arcPoints.Capacity - 1);
-
                             var a0 = m.pA0;
                             var a1 = m.pA1;
                             var b0 = m.pB0;
                             var b1 = m.pB1;
+
+                            var ca = Utilities.ClosestOnLine(m.intersection, a0, a1);
+                            var cb = Utilities.ClosestOnLine(m.intersection, b0, b1);
+
+                            var angle = MathHelper.DegreesToRadians(m.angle);
+                            var angleIncrement = angle / (arcPoints.Capacity - 1);
 
                             if (Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) != a0) Swap(ref a0, ref a1);
                             if (Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) != b0) Swap(ref b0, ref b1);
@@ -342,10 +347,6 @@ namespace OpenOrtho
                             }
 
                             spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange, 3);
-                            spriteBatch.DrawString(font, "A0", m.pA0, 0, Vector2.One, Color4.Red);
-                            spriteBatch.DrawString(font, "A1", m.pA1, 0, Vector2.One, Color4.Red);
-                            spriteBatch.DrawString(font, "B0", m.pB0, 0, Vector2.One, Color4.Red);
-                            spriteBatch.DrawString(font, "B1", m.pB1, 0, Vector2.One, Color4.Red);
                             arcPoints.Clear();
                         }
                     }
@@ -368,7 +369,7 @@ namespace OpenOrtho
                         var closestPoint = ClosestPoint(PickModelPoint(), 5);
                         if (closestPoint != null)
                         {
-                            //spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
+                            spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
                         }
                     }
                 }

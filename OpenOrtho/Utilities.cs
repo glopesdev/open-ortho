@@ -8,6 +8,14 @@ namespace OpenOrtho
 {
     public static class Utilities
     {
+        public static Vector2 ExtensionDirection(Vector2 p, Vector2 l0, Vector2 l1)
+        {
+            var c = ClosestOnLine(p, l0, l1);
+            var ce = ClosestOnLineExclusive(p, l0, l1);
+            var dir = 10 * Vector2.Normalize(p - ce);
+            return c == p ? -dir : dir;
+        }
+
         public static int CompareClockwise(Vector2 v1, Vector2 v2)
         {
             if (v1.X > 0 && v2.X > 0)
@@ -23,12 +31,6 @@ namespace OpenOrtho
         {
             var angle = (float)Math.Atan2(v.Y, v.X);
             return angle < 0 ? angle + MathHelper.TwoPi : angle;
-        }
-
-        public static bool AreEqual(float value1, float value2, float tolerance)
-        {
-            var diff = value2 - value1;
-            return Math.Abs(diff) < tolerance;
         }
 
         public static float VectorAngle(Vector2 v1, Vector2 v2)
@@ -75,19 +77,6 @@ namespace OpenOrtho
             return divisor == 0 ? (Vector2?)null : new Vector2(
                 (x1y2_y1x2 * x3_x4 - x1_x2 * x3y4_y3x4) / divisor,
                 (x1y2_y1x2 * y3_y4 - y1_y2 * x3y4_y3x4) / divisor);
-        }
-
-        public static Vector2 VectorIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
-        {
-            var v1 = p2 - p1;
-            var v2 = p4 - p3;
-            var v3 = p3 - p1;
-
-            var perP1 = v3.X * v2.Y - v3.Y * v2.X;
-            var perP2 = v1.X * v2.Y - v1.Y * v2.X;
-            var t = perP1 / perP2;
-
-            return new Vector2(p1.X + v1.X * t, p1.Y + v1.Y * t);
         }
 
         public static Vector2 PointOnLine(Vector2 q, Vector2 p0, Vector2 p1)
