@@ -317,28 +317,11 @@ namespace OpenOrtho
                             var dotPositive = dot > 0;
 
                             var direction = a1 - a0;
-                            if (ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
-                                ca0 && !cb0 && dotPositive && a0fst && b0fst ||
-                                !ca0 && cb0 && dotPositive && !a0fst && b0fst ||
-                                !ca0 && cb0 && !dotPositive && a0fst && !b0fst ||
-                                !ca0 && !cb0 && dotPositive && a0fst && b0fst)
+                            if (ca0 && cb0 && dotPositive && a0fst && b0fst ||
+                                ca0 && !cb0 && !dotPositive && a0fst && !b0fst ||
+                                !ca0 && cb0 && !dotPositive && !a0fst && b0fst)
                             {
-                                direction = a0 - a1;
-                            }
-                            else
-                            {
-                                if (ca0 && cb0 && dotPositive && a0fst && b0fst ||
-                                    !ca0 && cb0 && !dotPositive && !a0fst && b0fst)
-                                {
-                                    direction = b1 - b0;
-                                }
-                                else
-                                {
-                                    if (ca0 && !cb0 && !dotPositive && a0fst && !b0fst)
-                                    {
-                                        direction = b0 - b1;
-                                    }
-                                }
+                                direction = b1 - b0;
                             }
                             direction.Normalize();
 
