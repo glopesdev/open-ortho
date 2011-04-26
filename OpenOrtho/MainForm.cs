@@ -35,6 +35,9 @@ namespace OpenOrtho
         float scale;
         SpriteFont font;
         Camera2D camera;
+        bool nonPowerOfTwo;
+        int backgroundWidth;
+        int backgroundHeight;
         Texture2D background;
         SpriteBatch spriteBatch;
 
@@ -104,7 +107,7 @@ namespace OpenOrtho
 
         RectangleF GetRenderRectangle()
         {
-            var renderWidth = background.Width * scale;
+            var renderWidth = backgroundWidth * scale;
             return new RectangleF(-renderWidth / 2f, -glControl.Height / 2f, renderWidth, glControl.Height);
         }
 
@@ -139,7 +142,22 @@ namespace OpenOrtho
             if (background != null) background.Dispose();
 
             var radiographPath = Path.IsPathRooted(project.Radiograph) ? project.Radiograph : Path.Combine(projectDir, project.Radiograph);
-            background = Texture2D.FromFile(radiographPath);
+            using (var bitmap = new Bitmap(radiographPath))
+            {
+                backgroundWidth = bitmap.Width;
+                backgroundHeight = bitmap.Height;
+                if (!nonPowerOfTwo)
+                {
+                    var width = Utilities.NearestPowerOfTwo(backgroundWidth);
+                    var height = Utilities.NearestPowerOfTwo(backgroundHeight);
+                    using (var potsBitmap = new Bitmap(bitmap, width, height))
+                    {
+                        background = Texture2D.FromBitmap(potsBitmap);
+                    }
+                }
+                else background = Texture2D.FromBitmap(bitmap);
+            }
+
             analysisPropertyGrid.SelectedObject = project;
             analysisPropertyGrid.Enabled = true;
             ResetProjectStatus();
@@ -149,7 +167,7 @@ namespace OpenOrtho
         {
             if (background != null)
             {
-                scale = (float)glControl.Height / (float)background.Height;
+                scale = (float)glControl.Height / (float)backgroundHeight;
                 spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter * scale;
             }
         }
@@ -411,6 +429,7 @@ namespace OpenOrtho
             printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
             arcPoints = new List<Vector2>(11);
+            nonPowerOfTwo = GL.GetString(StringName.Extensions).Split(' ').Contains("GL_ARB_texture_non_power_of_two");
 
             clock = new Stopwatch();
             clock.Start();
