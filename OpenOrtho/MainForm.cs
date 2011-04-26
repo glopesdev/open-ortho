@@ -407,6 +407,7 @@ namespace OpenOrtho
 
         private void glControl_Load(object sender, EventArgs e)
         {
+            glControl.VSync = true;
             printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
             arcPoints = new List<Vector2>(11);
