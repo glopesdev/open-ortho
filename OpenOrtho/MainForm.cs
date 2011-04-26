@@ -144,12 +144,16 @@ namespace OpenOrtho
             var radiographPath = Path.IsPathRooted(project.Radiograph) ? project.Radiograph : Path.Combine(projectDir, project.Radiograph);
             using (var bitmap = new Bitmap(radiographPath))
             {
+                var query = new int[1];
+                GL.GetInteger(GetPName.MaxTextureSize, query);
+                var maxSize = query[0];
+
                 backgroundWidth = bitmap.Width;
                 backgroundHeight = bitmap.Height;
-                if (!nonPowerOfTwo)
+                if (!nonPowerOfTwo || backgroundWidth > maxSize || backgroundHeight > maxSize)
                 {
-                    var width = Utilities.NearestPowerOfTwo(backgroundWidth);
-                    var height = Utilities.NearestPowerOfTwo(backgroundHeight);
+                    var width = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundWidth));
+                    var height = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundHeight));
                     using (var potsBitmap = new Bitmap(bitmap, width, height))
                     {
                         background = Texture2D.FromBitmap(potsBitmap);
