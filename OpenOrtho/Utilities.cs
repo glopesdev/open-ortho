@@ -8,6 +8,20 @@ namespace OpenOrtho
 {
     public static class Utilities
     {
+        public static int NearestPowerOfTwo(int num)
+        {
+            int n = num > 0 ? num - 1 : 0;
+
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            n++;
+
+            return n;
+        }
+
         public static Vector2 ExtensionDirection(Vector2 p, Vector2 l0, Vector2 l1)
         {
             var c = ClosestOnLine(p, l0, l1);

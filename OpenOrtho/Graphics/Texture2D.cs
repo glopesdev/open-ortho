@@ -62,6 +62,31 @@ namespace OpenOrtho.Graphics
             finally { dataHandle.Free(); }
         }
 
+        public static Texture2D FromBitmap(System.Drawing.Bitmap bitmap)
+        {
+            return FromBitmap(bitmap, PixelInternalFormat.Rgba);
+        }
+
+        public static Texture2D FromBitmap(System.Drawing.Bitmap bitmap, PixelInternalFormat format)
+        {
+            bitmap.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
+            var texture = new Texture2D(bitmap.Width, bitmap.Height, format);
+
+            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                                             System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                                             System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            try
+            {
+                GL.BindTexture(TextureTarget.Texture2D, texture.Handle);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, texture.Format, texture.Width, texture.Height, 0,
+                              PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+            }
+            finally { bitmap.UnlockBits(bitmapData); }
+
+            return texture;
+        }
+
         public static Texture2D FromStream(Stream stream)
         {
             return FromStream(stream, PixelInternalFormat.Rgba);
@@ -71,22 +96,7 @@ namespace OpenOrtho.Graphics
         {
             using (var bitmap = new System.Drawing.Bitmap(stream))
             {
-                bitmap.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
-                var texture = new Texture2D(bitmap.Width, bitmap.Height, format);
-
-                var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                                                 System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                                                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                try
-                {
-                    GL.BindTexture(TextureTarget.Texture2D, texture.Handle);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, texture.Format, texture.Width, texture.Height, 0,
-                                  PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
-                }
-                finally { bitmap.UnlockBits(bitmapData); }
-
-                return texture;
+                return FromBitmap(bitmap);
             }
         }
 
