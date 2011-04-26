@@ -8,6 +8,17 @@ namespace OpenOrtho
 {
     public static class Utilities
     {
+        public static bool AreEqual(Vector2 v1, Vector2 v2, float tolerance)
+        {
+            return AreEqual(v1.X, v2.X, tolerance) && AreEqual(v1.Y, v2.Y, tolerance);
+        }
+
+        public static bool AreEqual(float value1, float value2, float tolerance)
+        {
+            var diff = value2 - value1;
+            return Math.Abs(diff) < tolerance;
+        }
+
         public static int NearestPowerOfTwo(int num)
         {
             int n = num > 0 ? num - 1 : 0;
@@ -24,10 +35,21 @@ namespace OpenOrtho
 
         public static Vector2 ExtensionDirection(Vector2 p, Vector2 l0, Vector2 l1)
         {
-            var c = ClosestOnLine(p, l0, l1);
-            var ce = ClosestOnLineExclusive(p, l0, l1);
+            var pl0 = AreEqual(p, l0, 0.1f);
+            var pl1 = AreEqual(p, l1, 0.1f);
+
+            Vector2 ce;
+            if (pl0) ce = l1;
+            else if (pl1) ce = l0;
+            else ce = ClosestOnLineExclusive(p, l0, l1);
+
             var dir = 10 * Vector2.Normalize(p - ce);
-            return c == p ? -dir : dir;
+            if (!pl0 && !pl1)
+            {
+                var c = ClosestOnLine(p, l0, l1);
+                return c == p ? -dir : dir;
+            }
+            else return dir;
         }
 
         public static int CompareClockwise(Vector2 v1, Vector2 v2)

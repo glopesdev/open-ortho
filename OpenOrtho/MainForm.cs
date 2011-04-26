@@ -167,6 +167,13 @@ namespace OpenOrtho
             ResetProjectStatus();
         }
 
+        void ClearSetScale()
+        {
+            scaleRefs.Clear();
+            setScale = false;
+            setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
+        }
+
         void UpdateScale()
         {
             if (background != null)
@@ -331,9 +338,6 @@ namespace OpenOrtho
                             var a1 = m.pA1;
                             var b0 = m.pB0;
                             var b1 = m.pB1;
-
-                            var ca = Utilities.ClosestOnLine(m.intersection, a0, a1);
-                            var cb = Utilities.ClosestOnLine(m.intersection, b0, b1);
 
                             var angle = MathHelper.DegreesToRadians(m.angle);
                             var angleIncrement = angle / (arcPoints.Capacity - 1);
@@ -534,6 +538,7 @@ namespace OpenOrtho
                 {
                     var serializer = new XmlSerializer(typeof(OrthoProject));
                     project = (OrthoProject)serializer.Deserialize(reader);
+                    ClearSetScale();
                     LoadProject(Path.GetDirectoryName(openProjectDialog.FileName));
                 }
             }
@@ -645,10 +650,7 @@ namespace OpenOrtho
             project.PixelsPerMillimeter = scaleLength / (float)scaleNumericUpDown.Value;
             analysisPropertyGrid.Refresh();
 
-            scaleRefs.Clear();
-            setScale = false;
-            setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
-
+            ClearSetScale();
             ResetProjectStatus();
         }
 
