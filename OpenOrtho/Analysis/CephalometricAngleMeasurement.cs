@@ -25,7 +25,7 @@ namespace OpenOrtho.Analysis
         {
             var lineA = new Vector3(points[PointA1].Measurement - points[PointA0].Measurement);
             var lineB = new Vector3(points[PointB1].Measurement - points[PointB0].Measurement);
-            return MathHelper.RadiansToDegrees(Utilities.LineAngle(lineA, lineB));
+            return MathHelper.RadiansToDegrees(Vector3.CalculateAngle(lineA, lineB));
         }
     }
 }

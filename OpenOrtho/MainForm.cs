@@ -325,49 +325,19 @@ namespace OpenOrtho
                                            };
 
                         spriteBatch.DrawVertices(from m in measurements
-                                                 let ca = Utilities.ClosestOnLineExclusive(m.intersection, m.pA0, m.pA1)
-                                                 let ea = Utilities.ExtensionDirection(m.intersection, m.pA0, m.pA1)
-                                                 let cb = Utilities.ClosestOnLineExclusive(m.intersection, m.pB0, m.pB1)
-                                                 let eb = Utilities.ExtensionDirection(m.intersection, m.pB0, m.pB1)
-                                                 from point in new[] { m.intersection + ea, ca, m.intersection + eb, cb }
+                                                 from point in new[] { m.intersection + 10 * Vector2.Normalize(m.pA1 - m.pA0), m.pA1, m.intersection + 10 * Vector2.Normalize(m.pB1 - m.pB0), m.pB1 }
                                                  select point, BeginMode.Lines, Color4.Orange, 3);
 
                         foreach (var m in measurements)
                         {
-                            var a0 = m.pA0;
-                            var a1 = m.pA1;
-                            var b0 = m.pB0;
-                            var b1 = m.pB1;
+                            var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
 
-                            var angle = MathHelper.DegreesToRadians(m.angle);
-                            var angleIncrement = angle / (arcPoints.Capacity - 1);
+                            var axis1 = m.pA0 - m.pA1;
+                            var axis2 = m.pB0 - m.pB1;
 
-                            if (Utilities.ClosestOnLineExclusive(m.intersection, a0, a1) != a0) Swap(ref a0, ref a1);
-                            if (Utilities.ClosestOnLineExclusive(m.intersection, b0, b1) != b0) Swap(ref b0, ref b1);
-
-                            var m1 = a0 - m.intersection;
-                            var m2 = b0 - m.intersection;
-                            var m3 = m.intersection - b0;
-                            var m4 = m.intersection - a0;
-                            if (Utilities.CompareClockwise(m1, m2) < 0)
-                            {
-                                Swap(ref m1, ref m2);
-                                Swap(ref m3, ref m4);
-                            }
-
-                            var angle1 = Utilities.VectorAngle(m1, m2);
-                            var angle2 = Utilities.VectorAngle(m1, m3);
-                            var direction = m1;
-                            if (Math.Abs(angle1 - angle) > Math.Abs(angle2 - angle))
-                            {
-                                if (Utilities.CompareClockwise(m3, m1) < 0)
-                                {
-                                    Swap(ref m3, ref m1);
-                                }
-                                direction = m3;
-                            }
-
+                            var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
                             direction.Normalize();
+
                             for (int i = 0; i < arcPoints.Capacity; i++)
                             {
                                 arcPoints.Add(m.intersection + direction * 4);
@@ -705,7 +675,11 @@ namespace OpenOrtho
                 CaptureScreen();
                 printDialog.Document = printDocument;
             }
-            printDialog.ShowDialog();
+
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDocument.Print();
+            }
         }
 
         private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -736,6 +710,8 @@ namespace OpenOrtho
                 e.Graphics.DrawString(readout, Font, Brushes.Black, offset);
                 offset.Y += e.Graphics.MeasureString(readout, Font).Height;
             }
+
+            e.HasMorePages = false;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
