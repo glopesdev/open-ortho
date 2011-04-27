@@ -52,15 +52,20 @@ namespace OpenOrtho
             else return dir;
         }
 
+        public static float VectorAnglePerpDot(Vector2 v1, Vector2 v2)
+        {
+            float perp_dot_product = -v1.Y * v2.X + v1.X * v2.Y;
+            float dot = v1.X * v2.X + v1.Y * v2.Y;
+
+            return (float)Math.Atan2(perp_dot_product, dot) + MathHelper.Pi;
+        }
+
         public static int CompareClockwise(Vector2 v1, Vector2 v2)
         {
-            if (v1.X > 0 && v2.X > 0)
-            {
-                if (v1.Y > 0 && v2.Y < 0) return -1;
-                else if (v2.Y > 0 && v1.Y < 0) return 1;
-            }
+            var angle1 = VectorAnglePerpDot(v1, v2);
+            var angle2 = MathHelper.TwoPi - angle1;
 
-            return VectorRotation(v1) > VectorRotation(v2) ? -1 : 1;
+            return angle1 > angle2 ? -1 : 1;
         }
 
         public static float VectorRotation(Vector2 v)
