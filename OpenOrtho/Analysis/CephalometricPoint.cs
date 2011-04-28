@@ -11,6 +11,8 @@ namespace OpenOrtho.Analysis
     {
         public string Name { get; set; }
 
+        public string Description { get; set; }
+
         [Browsable(false)]
         public bool Placed { get; set; }
 

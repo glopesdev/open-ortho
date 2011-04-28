@@ -63,13 +63,17 @@
       <DependentUpon>AnalysisEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Analysis\CephalometricAnalysis.cs" />
-    <Compile Include="Analysis\CephalometricAngleMeasurement.cs" />
-    <Compile Include="Analysis\CephalometricDistanceMeasurement.cs" />
-    <Compile Include="Analysis\CephalometricLineDistanceMeasurement.cs" />
+    <Compile Include="Analysis\AngleMeasurement.cs" />
+    <Compile Include="Analysis\DistanceMeasurement.cs" />
+    <Compile Include="Analysis\LineDistanceMeasurement.cs" />
     <Compile Include="Analysis\CephalometricMeasurement.cs" />
     <Compile Include="Analysis\CephalometricMeasurementCollection.cs" />
+    <Compile Include="Analysis\ConjugateAngleMeasurement.cs" />
     <Compile Include="Analysis\CephalometricPoint.cs" />
     <Compile Include="Analysis\CephalometricPointCollection.cs" />
+    <Compile Include="Analysis\AngleSumMeasurement.cs" />
+    <Compile Include="Analysis\NormalLineDistanceMeasurement.cs" />
+    <Compile Include="Analysis\ProjectedDistanceMeasurement.cs" />
     <Compile Include="AntiAliasedGLControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -78,6 +82,7 @@
     </Compile>
     <Compile Include="Graphics\Camera2D.cs" />
     <Compile Include="Graphics\GraphicsResource.cs" />
+    <Compile Include="Graphics\RenderTarget2D.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
     <Compile Include="Graphics\SpriteFont.cs" />
     <Compile Include="Graphics\Texture2D.cs" />

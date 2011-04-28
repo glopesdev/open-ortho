@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace OpenOrtho.Analysis
 {
-    public class CephalometricLineDistanceMeasurement : CephalometricMeasurement
+    public class LineDistanceMeasurement : CephalometricMeasurement
     {
         public override string Units
         {
@@ -19,7 +19,7 @@ namespace OpenOrtho.Analysis
 
         public string Line1 { get; set; }
 
-        public override float Measure(CephalometricPointCollection points)
+        public override float Measure(CephalometricPointCollection points, CephalometricMeasurementCollection measurements)
         {
             return Utilities.PointLineDistance(points[Point].Measurement, points[Line0].Measurement, points[Line1].Measurement);
         }

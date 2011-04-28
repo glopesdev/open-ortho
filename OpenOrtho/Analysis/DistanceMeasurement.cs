@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OpenOrtho.Analysis
 {
-    public class CephalometricDistanceMeasurement : CephalometricMeasurement
+    public class DistanceMeasurement : CephalometricMeasurement
     {
         public override string Units
         {
@@ -16,7 +16,7 @@ namespace OpenOrtho.Analysis
 
         public string Point1 { get; set; }
 
-        public override float Measure(CephalometricPointCollection points)
+        public override float Measure(CephalometricPointCollection points, CephalometricMeasurementCollection measurements)
         {
             return (points[Point1].Measurement - points[Point0].Measurement).Length;
         }

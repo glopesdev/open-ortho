@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace OpenOrtho.Analysis
 {
-    public class CephalometricAngleMeasurement : CephalometricMeasurement
+    public class AngleMeasurement : CephalometricMeasurement
     {
         public override string Units
         {
@@ -21,7 +21,7 @@ namespace OpenOrtho.Analysis
 
         public string PointB1 { get; set; }
 
-        public override float Measure(CephalometricPointCollection points)
+        public override float Measure(CephalometricPointCollection points, CephalometricMeasurementCollection measurements)
         {
             var lineA = new Vector3(points[PointA1].Measurement - points[PointA0].Measurement);
             var lineB = new Vector3(points[PointB1].Measurement - points[PointB0].Measurement);

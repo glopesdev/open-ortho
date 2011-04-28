@@ -81,13 +81,11 @@ namespace OpenOrtho.Graphics
             Draw(texture, new RectangleF(-halfWidth, -halfHeight, texture.Width, texture.Height));
         }
 
-        public void DrawVertices(IEnumerable<Vector2> vertices, BeginMode drawMode, Color4 color, float size)
+        public void DrawVertices(IEnumerable<Vector2> vertices, BeginMode drawMode, Color4 color)
         {
             LoadView();
 
             GL.Color4(color);
-            GL.PointSize(size);
-            GL.LineWidth(size);
             GL.Disable(EnableCap.Texture2D);
             GL.Begin(drawMode);
 
