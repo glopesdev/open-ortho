@@ -62,6 +62,30 @@ namespace OpenOrtho.Graphics
             finally { dataHandle.Free(); }
         }
 
+        public System.Drawing.Bitmap ToBitmap()
+        {
+            return ToBitmap(System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        }
+
+        public System.Drawing.Bitmap ToBitmap(System.Drawing.Imaging.PixelFormat format)
+        {
+            var bitmap = new System.Drawing.Bitmap(Width, Height, format);
+
+            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                                             System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                                             System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            try
+            {
+                GL.BindTexture(TextureTarget.Texture2D, handle);
+                GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+            }
+            finally { bitmap.UnlockBits(bitmapData); }
+
+            bitmap.RotateFlip(System.Drawing.RotateFlipType.RotateNoneFlipY);
+            return bitmap;
+        }
+
         public static Texture2D FromBitmap(System.Drawing.Bitmap bitmap)
         {
             return FromBitmap(bitmap, PixelInternalFormat.Rgba);

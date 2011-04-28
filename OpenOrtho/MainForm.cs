@@ -113,17 +113,36 @@ namespace OpenOrtho
 
         void CaptureScreen()
         {
-            using (var graphics = glControl.CreateGraphics())
-            {
-                var renderRectangle = GetRenderRectangle();
-                var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
-                var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
-                screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
-                screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
+            //using (var graphics = glControl.CreateGraphics())
+            //{
+            //    var renderRectangle = GetRenderRectangle();
+            //    var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
+            //    var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
+            //    screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
+            //    screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
 
-                var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
-                captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
+            //    var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
+            //    captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
+            //    deviceDpiX = graphics.DpiX;
+            //}
+
+            using (var graphics = glControl.CreateGraphics())
+            using (var renderTarget = new RenderTarget2D(backgroundWidth, backgroundHeight))
+            {
+                var pixelsPerMeter = spriteBatch.PixelsPerMeter;
+                spriteBatch.SetDimensions(backgroundWidth, backgroundHeight);
+                spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
+
+                renderTarget.Begin();
+                RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
+                renderTarget.End();
+
+                screenCapture = renderTarget.Texture.ToBitmap();
+                screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
                 deviceDpiX = graphics.DpiX;
+
+                spriteBatch.PixelsPerMeter = pixelsPerMeter;
+                spriteBatch.SetDimensions(glControl.Width, glControl.Height);
             }
         }
 
@@ -197,7 +216,8 @@ namespace OpenOrtho
             }
             else if (nextPlacement != null)
             {
-                placementToolStripStatusLabel.Text = "Place point: " + nextPlacement.Name;
+                var descriptionSuffix = !string.IsNullOrEmpty(nextPlacement.Description) ? string.Format(" ({0})", nextPlacement.Description) : string.Empty;
+                placementToolStripStatusLabel.Text = "Place point: " + nextPlacement.Name + descriptionSuffix;
             }
             else placementToolStripStatusLabel.Text = "Ready";
         }
@@ -239,121 +259,55 @@ namespace OpenOrtho
 
         void RenderModel()
         {
+            RenderModel(GetRenderRectangle(), 3, 1);
+        }
+
+        void RenderModel(RectangleF renderRectangle, float markerSize, float textSize)
+        {
+            GL.PointSize(markerSize);
+            GL.LineWidth(markerSize);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             spriteBatch.Begin(camera.GetViewMatrix());
 
             if (project != null)
             {
-                spriteBatch.Draw(background, GetRenderRectangle());
+                var points = project.Analysis.Points;
+                spriteBatch.Draw(background, renderRectangle);
 
                 if (setScale)
                 {
                     var drawMode = scaleRefs.Count == scaleRefs.Capacity ? BeginMode.LineStrip : BeginMode.Points;
-                    spriteBatch.DrawVertices(scaleRefs, drawMode, Color4.Turquoise, 3);
+                    spriteBatch.DrawVertices(scaleRefs, drawMode, Color4.Turquoise);
                 }
                 else if (project.Analysis != null)
                 {
-                    var points = project.Analysis.Points;
                     var missingPoints = points.FirstOrDefault(p => !p.Placed) != null;
-                    if (linesToolStripMenuItem.Checked && !missingPoints)
+                    if (anglesToolStripMenuItem.Checked && !missingPoints)
                     {
-                        spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
-                                                 let distanceMeasurement = measurement as CephalometricDistanceMeasurement
-                                                 where distanceMeasurement != null &&
-                                                       !string.IsNullOrEmpty(distanceMeasurement.Point0) &&
-                                                       !string.IsNullOrEmpty(distanceMeasurement.Point1)
-                                                 let point0 = points[distanceMeasurement.Point0]
-                                                 let point1 = points[distanceMeasurement.Point1]
-                                                 where point0.Placed && point1.Placed
-                                                 from point in new[] { point0.Measurement, point1.Measurement }
-                                                 select point, BeginMode.Lines, Color4.Violet, 3);
+                        RenderAngleMeasurements();
+                    }
+
+                    if (distancesToolStripMenuItem.Checked && !missingPoints)
+                    {
+                        RenderDistanceMeasurements();
                     }
 
                     if (pointLineDistancesToolStripMenuItem.Checked && !missingPoints)
                     {
-                        var measurements = from measurement in project.Analysis.Measurements
-                                           let lineDistanceMeasurement = measurement as CephalometricLineDistanceMeasurement
-                                           where lineDistanceMeasurement != null &&
-                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
-                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
-                                                 !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
-                                           let point = points[lineDistanceMeasurement.Point]
-                                           let line0 = points[lineDistanceMeasurement.Line0]
-                                           let line1 = points[lineDistanceMeasurement.Line1]
-                                           where point.Placed && line0.Placed && line1.Placed
-                                           select new
-                                           {
-                                               p = point.Measurement,
-                                               l0 = line0.Measurement,
-                                               l1 = line1.Measurement,
-                                               lp = Utilities.PointOnLine(point.Measurement, line0.Measurement, line1.Measurement)
-                                           };
-
-                        spriteBatch.DrawVertices(from m in measurements
-                                                 from point in new[] { m.lp, Utilities.ClosestOnLine(m.lp, m.l0, m.l1) }
-                                                 select point, BeginMode.Lines, Color4.Orange, 3);
-
-                        spriteBatch.DrawVertices(from m in measurements
-                                                 from point in new[] { m.p, m.lp }
-                                                 select point, BeginMode.Lines, Color4.Blue, 3);
+                        RenderLineDistanceMeasurements();
                     }
 
-                    if (anglesToolStripMenuItem.Checked && !missingPoints)
+                    if (projectedDistancesToolStripMenuItem.Checked && !missingPoints)
                     {
-                        var measurements = from measurement in project.Analysis.Measurements
-                                           let angleMeasurement = measurement as CephalometricAngleMeasurement
-                                           where angleMeasurement != null &&
-                                                 !string.IsNullOrEmpty(angleMeasurement.PointA0) &&
-                                                 !string.IsNullOrEmpty(angleMeasurement.PointA1) &&
-                                                 !string.IsNullOrEmpty(angleMeasurement.PointB0) &&
-                                                 !string.IsNullOrEmpty(angleMeasurement.PointB1)
-                                           let pointA0 = points[angleMeasurement.PointA0]
-                                           let pointA1 = points[angleMeasurement.PointA1]
-                                           let pointB0 = points[angleMeasurement.PointB0]
-                                           let pointB1 = points[angleMeasurement.PointB1]
-                                           where pointA0.Placed && pointA1.Placed && pointB0.Placed && pointB1.Placed
-                                           let intersection = Utilities.LineIntersection(pointA0.Measurement, pointA1.Measurement, pointB0.Measurement, pointB1.Measurement)
-                                           where intersection.HasValue
-                                           select new
-                                           {
-                                               pA0 = pointA0.Measurement,
-                                               pA1 = pointA1.Measurement,
-                                               pB0 = pointB0.Measurement,
-                                               pB1 = pointB1.Measurement,
-                                               intersection = intersection.Value,
-                                               angle = angleMeasurement.Measure(points)
-                                           };
-
-                        spriteBatch.DrawVertices(from m in measurements
-                                                 from point in new[] { m.intersection + 10 * Vector2.Normalize(m.pA1 - m.pA0), m.pA1, m.intersection + 10 * Vector2.Normalize(m.pB1 - m.pB0), m.pB1 }
-                                                 select point, BeginMode.Lines, Color4.Orange, 3);
-
-                        foreach (var m in measurements)
-                        {
-                            var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
-
-                            var axis1 = m.pA0 - m.pA1;
-                            var axis2 = m.pB0 - m.pB1;
-
-                            var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
-                            direction.Normalize();
-
-                            for (int i = 0; i < arcPoints.Capacity; i++)
-                            {
-                                arcPoints.Add(m.intersection + direction * 4);
-                                direction = Utilities.Rotate(direction, angleIncrement);
-                            }
-
-                            spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange, 3);
-                            arcPoints.Clear();
-                        }
+                        RenderProjectedDistanceMeasurements();
+                        RenderNormalLineDistanceMeasurements();
                     }
 
                     spriteBatch.DrawVertices(from point in points
                                              where point.Placed
-                                             select point.Measurement, BeginMode.Points, Color4.Red, 3);
+                                             select point.Measurement, BeginMode.Points, Color4.Red);
 
-                    var textScale = Vector2.One / camera.Zoom;
+                    var textScale = textSize * Vector2.One / camera.Zoom;
                     if (pointNamesToolStripMenuItem.Checked)
                     {
                         foreach (var point in points)
@@ -365,7 +319,7 @@ namespace OpenOrtho
                     else
                     {
                         var closestPoint = ClosestPoint(PickModelPoint(), 5);
-                        if (closestPoint != null)
+                        if (closestPoint != null && closestPoint.Placed)
                         {
                             spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
                         }
@@ -375,6 +329,186 @@ namespace OpenOrtho
 
             spriteBatch.End();
             glControl.SwapBuffers();
+        }
+
+        void RenderAngleMeasurements()
+        {
+            var points = project.Analysis.Points;
+            var measurements = from measurement in project.Analysis.Measurements
+                               where measurement.Enabled
+                               let angleMeasurement = measurement as AngleMeasurement
+                               where angleMeasurement != null &&
+                                     !string.IsNullOrEmpty(angleMeasurement.PointA0) &&
+                                     !string.IsNullOrEmpty(angleMeasurement.PointA1) &&
+                                     !string.IsNullOrEmpty(angleMeasurement.PointB0) &&
+                                     !string.IsNullOrEmpty(angleMeasurement.PointB1)
+                               let pointA0 = points[angleMeasurement.PointA0]
+                               let pointA1 = points[angleMeasurement.PointA1]
+                               let pointB0 = points[angleMeasurement.PointB0]
+                               let pointB1 = points[angleMeasurement.PointB1]
+                               where pointA0.Placed && pointA1.Placed && pointB0.Placed && pointB1.Placed
+                               let intersection = Utilities.LineIntersection(pointA0.Measurement, pointA1.Measurement, pointB0.Measurement, pointB1.Measurement)
+                               where intersection.HasValue
+                               select new
+                               {
+                                   pA0 = pointA0.Measurement,
+                                   pA1 = pointA1.Measurement,
+                                   pB0 = pointB0.Measurement,
+                                   pB1 = pointB1.Measurement,
+                                   intersection = intersection.Value,
+                                   angle = angleMeasurement.Measure(points, project.Analysis.Measurements)
+                               };
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[]
+                                     {
+                                         m.pA0, m.pA1,
+                                         m.intersection + 10 * Vector2.Normalize(m.pA1 - m.pA0), m.pA0,
+                                         m.pB0, m.pB1,
+                                         m.intersection + 10 * Vector2.Normalize(m.pB1 - m.pB0), m.pB0
+                                     }
+                                     select point, BeginMode.Lines, Color4.Orange);
+
+            foreach (var m in measurements)
+            {
+                var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
+
+                var axis1 = m.pA0 - m.pA1;
+                var axis2 = m.pB0 - m.pB1;
+
+                var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
+                direction.Normalize();
+
+                for (int i = 0; i < arcPoints.Capacity; i++)
+                {
+                    arcPoints.Add(m.intersection + direction * 4);
+                    direction = Utilities.Rotate(direction, angleIncrement);
+                }
+
+                spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange);
+                arcPoints.Clear();
+            }
+        }
+
+        void RenderDistanceMeasurements()
+        {
+            var points = project.Analysis.Points;
+            spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
+                                     where measurement.Enabled
+                                     let distanceMeasurement = measurement as DistanceMeasurement
+                                     where distanceMeasurement != null &&
+                                           !string.IsNullOrEmpty(distanceMeasurement.Point0) &&
+                                           !string.IsNullOrEmpty(distanceMeasurement.Point1)
+                                     let point0 = points[distanceMeasurement.Point0]
+                                     let point1 = points[distanceMeasurement.Point1]
+                                     where point0.Placed && point1.Placed
+                                     from point in new[] { point0.Measurement, point1.Measurement }
+                                     select point, BeginMode.Lines, Color4.Violet);
+        }
+
+        void RenderLineDistanceMeasurements()
+        {
+            var points = project.Analysis.Points;
+            var measurements = from measurement in project.Analysis.Measurements
+                               where measurement.Enabled
+                               let lineDistanceMeasurement = measurement as LineDistanceMeasurement
+                               where lineDistanceMeasurement != null &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
+                               let point = points[lineDistanceMeasurement.Point]
+                               let line0 = points[lineDistanceMeasurement.Line0]
+                               let line1 = points[lineDistanceMeasurement.Line1]
+                               where point.Placed && line0.Placed && line1.Placed
+                               select new
+                               {
+                                   p = point.Measurement,
+                                   l0 = line0.Measurement,
+                                   l1 = line1.Measurement,
+                                   lp = Utilities.PointOnLine(point.Measurement, line0.Measurement, line1.Measurement)
+                               };
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[] { m.l0, m.l1 }
+                                     select point, BeginMode.Lines, Color4.Orange);
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[] { m.p, m.lp }
+                                     select point, BeginMode.Lines, Color4.Blue);
+        }
+
+        void RenderProjectedDistanceMeasurements()
+        {
+            var points = project.Analysis.Points;
+            var measurements = from measurement in project.Analysis.Measurements
+                               where measurement.Enabled
+                               let lineDistanceMeasurement = measurement as ProjectedDistanceMeasurement
+                               where lineDistanceMeasurement != null &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point0) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point1) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
+                               let point0 = points[lineDistanceMeasurement.Point0]
+                               let point1 = points[lineDistanceMeasurement.Point1]
+                               let line0 = points[lineDistanceMeasurement.Line0]
+                               let line1 = points[lineDistanceMeasurement.Line1]
+                               where point0.Placed && point1.Placed && line0.Placed && line1.Placed
+                               select new
+                               {
+                                   p0 = point0.Measurement,
+                                   p1 = point1.Measurement,
+                                   l0 = line0.Measurement,
+                                   l1 = line1.Measurement,
+                                   lp0 = Utilities.PointOnLine(point0.Measurement, line0.Measurement, line1.Measurement),
+                                   lp1 = Utilities.PointOnLine(point1.Measurement, line0.Measurement, line1.Measurement)
+                               };
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[] { m.l0, m.l1 }
+                                     select point, BeginMode.Lines, Color4.Orange);
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[] { m.p0, m.lp0, m.p1, m.lp1 }
+                                     select point, BeginMode.Lines, Color4.Blue);
+        }
+
+        void RenderNormalLineDistanceMeasurements()
+        {
+            var points = project.Analysis.Points;
+            var measurements = from measurement in project.Analysis.Measurements
+                               where measurement.Enabled
+                               let lineDistanceMeasurement = measurement as NormalLineDistanceMeasurement
+                               where lineDistanceMeasurement != null &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.NormalLinePoint) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
+                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
+                               let point = points[lineDistanceMeasurement.Point]
+                               let normalLinePoint = points[lineDistanceMeasurement.NormalLinePoint]
+                               let line0 = points[lineDistanceMeasurement.Line0]
+                               let line1 = points[lineDistanceMeasurement.Line1]
+                               where point.Placed && normalLinePoint.Placed && line0.Placed && line1.Placed
+                               let nlp0 = Utilities.PointOnLine(normalLinePoint.Measurement, line0.Measurement, line1.Measurement)
+                               select new
+                               {
+                                   p = point.Measurement,
+                                   l0 = line0.Measurement,
+                                   l1 = line1.Measurement,
+                                   nlp0,
+                                   nlp1 = normalLinePoint.Measurement,
+                                   lp = Utilities.PointOnLine(point.Measurement, nlp0, normalLinePoint.Measurement)
+                               };
+
+            spriteBatch.DrawVertices(from m in measurements
+                                     from point in new[] { m.l0, m.nlp0, m.l1, m.nlp0, m.nlp0, m.nlp1, m.nlp0, m.lp, m.nlp1, m.lp }
+                                     select point, BeginMode.Lines, Color4.Orange);
+
+            if (pointLineDistancesToolStripMenuItem.Checked)
+            {
+                spriteBatch.DrawVertices(from m in measurements
+                                         from point in new[] { m.p, m.lp }
+                                         select point, BeginMode.Lines, Color4.Blue);
+            }
         }
 
         Vector2 PickModelPoint()
@@ -534,6 +668,7 @@ namespace OpenOrtho
         {
             if (project == null) return;
 
+            saveProjectDialog.FileName = Path.ChangeExtension(Path.GetFileName(openImageDialog.FileName), ".ortho");
             if (saveProjectDialog.ShowDialog() == DialogResult.OK)
             {
                 var projectUri = new Uri(saveProjectDialog.FileName);
@@ -706,7 +841,9 @@ namespace OpenOrtho
 
             foreach (var measurement in analysis.Measurements)
             {
-                var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(analysis.Points), measurement.Units);
+                if (!measurement.Enabled) continue;
+
+                var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(analysis.Points, analysis.Measurements), measurement.Units);
                 e.Graphics.DrawString(readout, Font, Brushes.Black, offset);
                 offset.Y += e.Graphics.MeasureString(readout, Font).Height;
             }
@@ -717,6 +854,26 @@ namespace OpenOrtho
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void enableAllMeasurementsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project == null) return;
+
+            foreach (var measurement in project.Analysis.Measurements)
+            {
+                measurement.Enabled = true;
+            }
+        }
+
+        private void disableAllMeasurementsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project == null) return;
+
+            foreach (var measurement in project.Analysis.Measurements)
+            {
+                measurement.Enabled = false;
+            }
         }
     }
 }

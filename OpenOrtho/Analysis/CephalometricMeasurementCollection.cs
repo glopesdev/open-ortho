@@ -10,9 +10,13 @@ using System.Xml.Serialization;
 
 namespace OpenOrtho.Analysis
 {
-    [XmlInclude(typeof(CephalometricAngleMeasurement))]
-    [XmlInclude(typeof(CephalometricDistanceMeasurement))]
-    [XmlInclude(typeof(CephalometricLineDistanceMeasurement))]
+    [XmlInclude(typeof(AngleMeasurement))]
+    [XmlInclude(typeof(AngleSumMeasurement))]
+    [XmlInclude(typeof(ConjugateAngleMeasurement))]
+    [XmlInclude(typeof(DistanceMeasurement))]
+    [XmlInclude(typeof(LineDistanceMeasurement))]
+    [XmlInclude(typeof(ProjectedDistanceMeasurement))]
+    [XmlInclude(typeof(NormalLineDistanceMeasurement))]
     [Editor(typeof(CephalometricMeasurementCollectionEditor), typeof(UITypeEditor))]
     public class CephalometricMeasurementCollection : KeyedCollection<string, CephalometricMeasurement>
     {
@@ -30,7 +34,16 @@ namespace OpenOrtho.Analysis
 
             protected override Type[] CreateNewItemTypes()
             {
-                return new[] { typeof(CephalometricDistanceMeasurement), typeof(CephalometricAngleMeasurement), typeof(CephalometricLineDistanceMeasurement) };
+                return new[]
+                {
+                    typeof(AngleMeasurement),
+                    typeof(AngleSumMeasurement),
+                    typeof(ConjugateAngleMeasurement),
+                    typeof(DistanceMeasurement),
+                    typeof(LineDistanceMeasurement),
+                    typeof(ProjectedDistanceMeasurement),
+                    typeof(NormalLineDistanceMeasurement)
+                };
             }
         }
     }
