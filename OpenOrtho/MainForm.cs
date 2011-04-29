@@ -65,6 +65,7 @@ namespace OpenOrtho
 
         Bitmap screenCapture;
         float deviceDpiX;
+        bool printing;
 
         public MainForm()
         {
@@ -315,7 +316,7 @@ namespace OpenOrtho
                             spriteBatch.DrawString(font, point.Name, point.Measurement, 0, textScale, Color4.Red);
                         }
                     }
-                    else
+                    else if (!printing)
                     {
                         var closestPoint = ClosestPoint(PickModelPoint(), 5);
                         if (closestPoint != null && closestPoint.Placed)
@@ -629,8 +630,10 @@ namespace OpenOrtho
         {
             if (project != null)
             {
+                printing = true;
                 CaptureScreen();
                 printDialog.Document = printDocument;
+                printing = false;
             }
 
             if (printDialog.ShowDialog() == DialogResult.OK)
@@ -643,8 +646,10 @@ namespace OpenOrtho
         {
             if (project != null)
             {
+                printing = true;
                 CaptureScreen();
                 printPreviewDialog.Document = printDocument;
+                printing = false;
             }
             printPreviewDialog.ShowDialog();
         }

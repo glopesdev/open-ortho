@@ -77,23 +77,23 @@ namespace OpenOrtho.Analysis
                             pB0, pB1,
                             intersection.Value + ExtensionSize * Vector2.Normalize(pB1 - pB0), pB0
                         }, BeginMode.Lines, Color4.Orange);
+
+                        var angleIncrement = MathHelper.DegreesToRadians(Measure(points, measurements)) / (arcPoints.Capacity - 1);
+                        var axis1 = pA1 - pointNormal;
+                        var axis2 = pB0 - pB1;
+
+                        var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
+                        direction.Normalize();
+
+                        for (int i = 0; i < arcPoints.Capacity; i++)
+                        {
+                            arcPoints.Add(intersection.Value + direction * 4);
+                            direction = Utilities.Rotate(direction, angleIncrement);
+                        }
+
+                        spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange);
+                        arcPoints.Clear();
                     }
-
-                    var angleIncrement = MathHelper.DegreesToRadians(Measure(points, measurements)) / (arcPoints.Capacity - 1);
-                    var axis1 = pA1 - pointNormal;
-                    var axis2 = pB0 - pB1;
-
-                    var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
-                    direction.Normalize();
-
-                    for (int i = 0; i < arcPoints.Capacity; i++)
-                    {
-                        arcPoints.Add(intersection.Value + direction * 4);
-                        direction = Utilities.Rotate(direction, angleIncrement);
-                    }
-
-                    spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange);
-                    arcPoints.Clear();
                 }
             }
         }

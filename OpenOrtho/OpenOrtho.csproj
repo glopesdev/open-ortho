@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Analysis\CephalometricAnalysis.cs" />
     <Compile Include="Analysis\AngleMeasurement.cs" />
+    <Compile Include="Analysis\NormalLineProjectedDistanceMeasurement.cs" />
     <Compile Include="Analysis\DistanceMeasurement.cs" />
     <Compile Include="Analysis\LineDistanceMeasurement.cs" />
     <Compile Include="Analysis\CephalometricMeasurement.cs" />
