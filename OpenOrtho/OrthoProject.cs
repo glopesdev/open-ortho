@@ -15,10 +15,14 @@ namespace OpenOrtho
             Analysis = new CephalometricAnalysis();
         }
 
+        [ReadOnly(true)]
+        [Category("Cephalometry")]
         public string Radiograph { get; set; }
 
+        [Category("Scale")]
         public float PixelsPerMillimeter { get; set; }
 
+        [Category("Cephalometry")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public CephalometricAnalysis Analysis { get; set; }
     }

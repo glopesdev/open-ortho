@@ -13,6 +13,7 @@ namespace OpenOrtho.Analysis
     [XmlInclude(typeof(AngleMeasurement))]
     [XmlInclude(typeof(AngleSumMeasurement))]
     [XmlInclude(typeof(ConjugateAngleMeasurement))]
+    [XmlInclude(typeof(NormalLineAngleMeasurement))]
     [XmlInclude(typeof(DistanceMeasurement))]
     [XmlInclude(typeof(LineDistanceMeasurement))]
     [XmlInclude(typeof(ProjectedDistanceMeasurement))]
@@ -39,6 +40,7 @@ namespace OpenOrtho.Analysis
                     typeof(AngleMeasurement),
                     typeof(AngleSumMeasurement),
                     typeof(ConjugateAngleMeasurement),
+                    typeof(NormalLineAngleMeasurement),
                     typeof(DistanceMeasurement),
                     typeof(LineDistanceMeasurement),
                     typeof(ProjectedDistanceMeasurement),

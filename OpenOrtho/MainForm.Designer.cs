@@ -56,10 +56,10 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.selectAnalysisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pointNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pointLineDistancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.distancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.anglesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.namesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mainLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.distanceLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.auxiliaryLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analysisEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,7 +97,6 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
-            this.projectedDistancesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
@@ -337,46 +336,45 @@
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pointNamesToolStripMenuItem,
-            this.anglesToolStripMenuItem,
-            this.distancesToolStripMenuItem,
-            this.projectedDistancesToolStripMenuItem,
-            this.pointLineDistancesToolStripMenuItem});
+            this.namesToolStripMenuItem,
+            this.mainLinesToolStripMenuItem,
+            this.auxiliaryLinesToolStripMenuItem,
+            this.distanceLinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
             // 
-            // pointNamesToolStripMenuItem
+            // namesToolStripMenuItem
             // 
-            this.pointNamesToolStripMenuItem.CheckOnClick = true;
-            this.pointNamesToolStripMenuItem.Name = "pointNamesToolStripMenuItem";
-            this.pointNamesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.pointNamesToolStripMenuItem.Text = "Point &Names";
+            this.namesToolStripMenuItem.CheckOnClick = true;
+            this.namesToolStripMenuItem.Name = "namesToolStripMenuItem";
+            this.namesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.namesToolStripMenuItem.Text = "&Names";
             // 
-            // pointLineDistancesToolStripMenuItem
+            // mainLinesToolStripMenuItem
             // 
-            this.pointLineDistancesToolStripMenuItem.CheckOnClick = true;
-            this.pointLineDistancesToolStripMenuItem.Name = "pointLineDistancesToolStripMenuItem";
-            this.pointLineDistancesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.pointLineDistancesToolStripMenuItem.Text = "Point-&Line Distances";
+            this.mainLinesToolStripMenuItem.Checked = true;
+            this.mainLinesToolStripMenuItem.CheckOnClick = true;
+            this.mainLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mainLinesToolStripMenuItem.Name = "mainLinesToolStripMenuItem";
+            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mainLinesToolStripMenuItem.Text = "&Main Lines";
             // 
-            // distancesToolStripMenuItem
+            // distanceLinesToolStripMenuItem
             // 
-            this.distancesToolStripMenuItem.Checked = true;
-            this.distancesToolStripMenuItem.CheckOnClick = true;
-            this.distancesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.distancesToolStripMenuItem.Name = "distancesToolStripMenuItem";
-            this.distancesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.distancesToolStripMenuItem.Text = "&Distances";
+            this.distanceLinesToolStripMenuItem.CheckOnClick = true;
+            this.distanceLinesToolStripMenuItem.Name = "distanceLinesToolStripMenuItem";
+            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.distanceLinesToolStripMenuItem.Text = "&Distance Lines";
             // 
-            // anglesToolStripMenuItem
+            // auxiliaryLinesToolStripMenuItem
             // 
-            this.anglesToolStripMenuItem.Checked = true;
-            this.anglesToolStripMenuItem.CheckOnClick = true;
-            this.anglesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.anglesToolStripMenuItem.Name = "anglesToolStripMenuItem";
-            this.anglesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.anglesToolStripMenuItem.Text = "&Angles";
+            this.auxiliaryLinesToolStripMenuItem.Checked = true;
+            this.auxiliaryLinesToolStripMenuItem.CheckOnClick = true;
+            this.auxiliaryLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.auxiliaryLinesToolStripMenuItem.Name = "auxiliaryLinesToolStripMenuItem";
+            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.auxiliaryLinesToolStripMenuItem.Text = "&Auxiliary Lines";
             // 
             // toolsToolStripMenuItem
             // 
@@ -731,15 +729,6 @@
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
             // 
-            // projectedDistancesToolStripMenuItem
-            // 
-            this.projectedDistancesToolStripMenuItem.Checked = true;
-            this.projectedDistancesToolStripMenuItem.CheckOnClick = true;
-            this.projectedDistancesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.projectedDistancesToolStripMenuItem.Name = "projectedDistancesToolStripMenuItem";
-            this.projectedDistancesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.projectedDistancesToolStripMenuItem.Text = "&Projected Distances";
-            // 
             // glControl
             // 
             this.glControl.BackColor = System.Drawing.Color.Black;
@@ -853,10 +842,9 @@
         private System.Windows.Forms.ToolStripMenuItem selectAnalysisToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openAnalysisDialog;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pointNamesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem distancesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pointLineDistancesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem anglesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem namesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem distanceLinesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mainLinesToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel placementToolStripStatusLabel;
         private System.Windows.Forms.PrintDialog printDialog;
         private System.Windows.Forms.PrintPreviewDialog printPreviewDialog;
@@ -865,7 +853,7 @@
         private System.Windows.Forms.ToolStripMenuItem enableAllMeasurementsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disableAllMeasurementsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
-        private System.Windows.Forms.ToolStripMenuItem projectedDistancesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem auxiliaryLinesToolStripMenuItem;
 
     }
 }
