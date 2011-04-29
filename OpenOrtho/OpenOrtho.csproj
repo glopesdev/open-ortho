@@ -72,6 +72,7 @@
     <Compile Include="Analysis\CephalometricPoint.cs" />
     <Compile Include="Analysis\CephalometricPointCollection.cs" />
     <Compile Include="Analysis\AngleSumMeasurement.cs" />
+    <Compile Include="Analysis\NormalLineAngleMeasurement.cs" />
     <Compile Include="Analysis\NormalLineDistanceMeasurement.cs" />
     <Compile Include="Analysis\ProjectedDistanceMeasurement.cs" />
     <Compile Include="AntiAliasedGLControl.cs">
@@ -80,6 +81,7 @@
     <Compile Include="CommandExecutor.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DrawingOptions.cs" />
     <Compile Include="Graphics\Camera2D.cs" />
     <Compile Include="Graphics\GraphicsResource.cs" />
     <Compile Include="Graphics\RenderTarget2D.cs" />

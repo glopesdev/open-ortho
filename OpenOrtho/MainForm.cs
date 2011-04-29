@@ -36,6 +36,7 @@ namespace OpenOrtho
         SpriteFont font;
         Camera2D camera;
         bool nonPowerOfTwo;
+        bool frameBufferObjects;
         int backgroundWidth;
         int backgroundHeight;
         Texture2D background;
@@ -113,36 +114,40 @@ namespace OpenOrtho
 
         void CaptureScreen()
         {
-            //using (var graphics = glControl.CreateGraphics())
-            //{
-            //    var renderRectangle = GetRenderRectangle();
-            //    var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
-            //    var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
-            //    screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
-            //    screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
-
-            //    var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
-            //    captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
-            //    deviceDpiX = graphics.DpiX;
-            //}
-
             using (var graphics = glControl.CreateGraphics())
-            using (var renderTarget = new RenderTarget2D(backgroundWidth, backgroundHeight))
             {
-                var pixelsPerMeter = spriteBatch.PixelsPerMeter;
-                spriteBatch.SetDimensions(backgroundWidth, backgroundHeight);
-                spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
+                if (frameBufferObjects && nonPowerOfTwo)
+                {
+                    using (var renderTarget = new RenderTarget2D(backgroundWidth, backgroundHeight))
+                    {
+                        var pixelsPerMeter = spriteBatch.PixelsPerMeter;
+                        spriteBatch.SetDimensions(backgroundWidth, backgroundHeight);
+                        spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
-                renderTarget.Begin();
-                RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
-                renderTarget.End();
+                        renderTarget.Begin();
+                        RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
+                        renderTarget.End();
 
-                screenCapture = renderTarget.Texture.ToBitmap();
-                screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
+                        screenCapture = renderTarget.Texture.ToBitmap();
+                        screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
+
+                        spriteBatch.PixelsPerMeter = pixelsPerMeter;
+                        spriteBatch.SetDimensions(glControl.Width, glControl.Height);
+                    }
+                }
+                else
+                {
+                    var renderRectangle = GetRenderRectangle();
+                    var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
+                    var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
+                    screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
+                    screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
+
+                    var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
+                    captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
+                }
+
                 deviceDpiX = graphics.DpiX;
-
-                spriteBatch.PixelsPerMeter = pixelsPerMeter;
-                spriteBatch.SetDimensions(glControl.Width, glControl.Height);
             }
         }
 
@@ -282,25 +287,19 @@ namespace OpenOrtho
                 else if (project.Analysis != null)
                 {
                     var missingPoints = points.FirstOrDefault(p => !p.Placed) != null;
-                    if (anglesToolStripMenuItem.Checked && !missingPoints)
+                    if (!missingPoints)
                     {
-                        RenderAngleMeasurements();
-                    }
+                        var options = DrawingOptions.None;
+                        if (namesToolStripMenuItem.Checked) options |= DrawingOptions.Names;
+                        if (mainLinesToolStripMenuItem.Checked) options |= DrawingOptions.MainLines;
+                        if (auxiliaryLinesToolStripMenuItem.Checked) options |= DrawingOptions.AuxiliaryLines;
+                        if (distanceLinesToolStripMenuItem.Checked) options |= DrawingOptions.DistanceLines;
 
-                    if (distancesToolStripMenuItem.Checked && !missingPoints)
-                    {
-                        RenderDistanceMeasurements();
-                    }
-
-                    if (pointLineDistancesToolStripMenuItem.Checked && !missingPoints)
-                    {
-                        RenderLineDistanceMeasurements();
-                    }
-
-                    if (projectedDistancesToolStripMenuItem.Checked && !missingPoints)
-                    {
-                        RenderProjectedDistanceMeasurements();
-                        RenderNormalLineDistanceMeasurements();
+                        foreach (var measurement in project.Analysis.Measurements)
+                        {
+                            if (!measurement.Enabled) continue;
+                            measurement.Draw(spriteBatch, project.Analysis.Points, project.Analysis.Measurements, options);
+                        }
                     }
 
                     spriteBatch.DrawVertices(from point in points
@@ -308,7 +307,7 @@ namespace OpenOrtho
                                              select point.Measurement, BeginMode.Points, Color4.Red);
 
                     var textScale = textSize * Vector2.One / camera.Zoom;
-                    if (pointNamesToolStripMenuItem.Checked)
+                    if (namesToolStripMenuItem.Checked)
                     {
                         foreach (var point in points)
                         {
@@ -329,186 +328,6 @@ namespace OpenOrtho
 
             spriteBatch.End();
             glControl.SwapBuffers();
-        }
-
-        void RenderAngleMeasurements()
-        {
-            var points = project.Analysis.Points;
-            var measurements = from measurement in project.Analysis.Measurements
-                               where measurement.Enabled
-                               let angleMeasurement = measurement as AngleMeasurement
-                               where angleMeasurement != null &&
-                                     !string.IsNullOrEmpty(angleMeasurement.PointA0) &&
-                                     !string.IsNullOrEmpty(angleMeasurement.PointA1) &&
-                                     !string.IsNullOrEmpty(angleMeasurement.PointB0) &&
-                                     !string.IsNullOrEmpty(angleMeasurement.PointB1)
-                               let pointA0 = points[angleMeasurement.PointA0]
-                               let pointA1 = points[angleMeasurement.PointA1]
-                               let pointB0 = points[angleMeasurement.PointB0]
-                               let pointB1 = points[angleMeasurement.PointB1]
-                               where pointA0.Placed && pointA1.Placed && pointB0.Placed && pointB1.Placed
-                               let intersection = Utilities.LineIntersection(pointA0.Measurement, pointA1.Measurement, pointB0.Measurement, pointB1.Measurement)
-                               where intersection.HasValue
-                               select new
-                               {
-                                   pA0 = pointA0.Measurement,
-                                   pA1 = pointA1.Measurement,
-                                   pB0 = pointB0.Measurement,
-                                   pB1 = pointB1.Measurement,
-                                   intersection = intersection.Value,
-                                   angle = angleMeasurement.Measure(points, project.Analysis.Measurements)
-                               };
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[]
-                                     {
-                                         m.pA0, m.pA1,
-                                         m.intersection + 10 * Vector2.Normalize(m.pA1 - m.pA0), m.pA0,
-                                         m.pB0, m.pB1,
-                                         m.intersection + 10 * Vector2.Normalize(m.pB1 - m.pB0), m.pB0
-                                     }
-                                     select point, BeginMode.Lines, Color4.Orange);
-
-            foreach (var m in measurements)
-            {
-                var angleIncrement = MathHelper.DegreesToRadians(m.angle) / (arcPoints.Capacity - 1);
-
-                var axis1 = m.pA0 - m.pA1;
-                var axis2 = m.pB0 - m.pB1;
-
-                var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
-                direction.Normalize();
-
-                for (int i = 0; i < arcPoints.Capacity; i++)
-                {
-                    arcPoints.Add(m.intersection + direction * 4);
-                    direction = Utilities.Rotate(direction, angleIncrement);
-                }
-
-                spriteBatch.DrawVertices(arcPoints, BeginMode.LineStrip, Color4.Orange);
-                arcPoints.Clear();
-            }
-        }
-
-        void RenderDistanceMeasurements()
-        {
-            var points = project.Analysis.Points;
-            spriteBatch.DrawVertices(from measurement in project.Analysis.Measurements
-                                     where measurement.Enabled
-                                     let distanceMeasurement = measurement as DistanceMeasurement
-                                     where distanceMeasurement != null &&
-                                           !string.IsNullOrEmpty(distanceMeasurement.Point0) &&
-                                           !string.IsNullOrEmpty(distanceMeasurement.Point1)
-                                     let point0 = points[distanceMeasurement.Point0]
-                                     let point1 = points[distanceMeasurement.Point1]
-                                     where point0.Placed && point1.Placed
-                                     from point in new[] { point0.Measurement, point1.Measurement }
-                                     select point, BeginMode.Lines, Color4.Violet);
-        }
-
-        void RenderLineDistanceMeasurements()
-        {
-            var points = project.Analysis.Points;
-            var measurements = from measurement in project.Analysis.Measurements
-                               where measurement.Enabled
-                               let lineDistanceMeasurement = measurement as LineDistanceMeasurement
-                               where lineDistanceMeasurement != null &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
-                               let point = points[lineDistanceMeasurement.Point]
-                               let line0 = points[lineDistanceMeasurement.Line0]
-                               let line1 = points[lineDistanceMeasurement.Line1]
-                               where point.Placed && line0.Placed && line1.Placed
-                               select new
-                               {
-                                   p = point.Measurement,
-                                   l0 = line0.Measurement,
-                                   l1 = line1.Measurement,
-                                   lp = Utilities.PointOnLine(point.Measurement, line0.Measurement, line1.Measurement)
-                               };
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[] { m.l0, m.l1 }
-                                     select point, BeginMode.Lines, Color4.Orange);
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[] { m.p, m.lp }
-                                     select point, BeginMode.Lines, Color4.Blue);
-        }
-
-        void RenderProjectedDistanceMeasurements()
-        {
-            var points = project.Analysis.Points;
-            var measurements = from measurement in project.Analysis.Measurements
-                               where measurement.Enabled
-                               let lineDistanceMeasurement = measurement as ProjectedDistanceMeasurement
-                               where lineDistanceMeasurement != null &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point0) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point1) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
-                               let point0 = points[lineDistanceMeasurement.Point0]
-                               let point1 = points[lineDistanceMeasurement.Point1]
-                               let line0 = points[lineDistanceMeasurement.Line0]
-                               let line1 = points[lineDistanceMeasurement.Line1]
-                               where point0.Placed && point1.Placed && line0.Placed && line1.Placed
-                               select new
-                               {
-                                   p0 = point0.Measurement,
-                                   p1 = point1.Measurement,
-                                   l0 = line0.Measurement,
-                                   l1 = line1.Measurement,
-                                   lp0 = Utilities.PointOnLine(point0.Measurement, line0.Measurement, line1.Measurement),
-                                   lp1 = Utilities.PointOnLine(point1.Measurement, line0.Measurement, line1.Measurement)
-                               };
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[] { m.l0, m.l1 }
-                                     select point, BeginMode.Lines, Color4.Orange);
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[] { m.p0, m.lp0, m.p1, m.lp1 }
-                                     select point, BeginMode.Lines, Color4.Blue);
-        }
-
-        void RenderNormalLineDistanceMeasurements()
-        {
-            var points = project.Analysis.Points;
-            var measurements = from measurement in project.Analysis.Measurements
-                               where measurement.Enabled
-                               let lineDistanceMeasurement = measurement as NormalLineDistanceMeasurement
-                               where lineDistanceMeasurement != null &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Point) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.NormalLinePoint) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line0) &&
-                                     !string.IsNullOrEmpty(lineDistanceMeasurement.Line1)
-                               let point = points[lineDistanceMeasurement.Point]
-                               let normalLinePoint = points[lineDistanceMeasurement.NormalLinePoint]
-                               let line0 = points[lineDistanceMeasurement.Line0]
-                               let line1 = points[lineDistanceMeasurement.Line1]
-                               where point.Placed && normalLinePoint.Placed && line0.Placed && line1.Placed
-                               let nlp0 = Utilities.PointOnLine(normalLinePoint.Measurement, line0.Measurement, line1.Measurement)
-                               select new
-                               {
-                                   p = point.Measurement,
-                                   l0 = line0.Measurement,
-                                   l1 = line1.Measurement,
-                                   nlp0,
-                                   nlp1 = normalLinePoint.Measurement,
-                                   lp = Utilities.PointOnLine(point.Measurement, nlp0, normalLinePoint.Measurement)
-                               };
-
-            spriteBatch.DrawVertices(from m in measurements
-                                     from point in new[] { m.l0, m.nlp0, m.l1, m.nlp0, m.nlp0, m.nlp1, m.nlp0, m.lp, m.nlp1, m.lp }
-                                     select point, BeginMode.Lines, Color4.Orange);
-
-            if (pointLineDistancesToolStripMenuItem.Checked)
-            {
-                spriteBatch.DrawVertices(from m in measurements
-                                         from point in new[] { m.p, m.lp }
-                                         select point, BeginMode.Lines, Color4.Blue);
-            }
         }
 
         Vector2 PickModelPoint()
@@ -541,7 +360,10 @@ namespace OpenOrtho
             printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
             arcPoints = new List<Vector2>(11);
-            nonPowerOfTwo = GL.GetString(StringName.Extensions).Split(' ').Contains("GL_ARB_texture_non_power_of_two");
+
+            var extensions = GL.GetString(StringName.Extensions).Split(' ');
+            nonPowerOfTwo = extensions.Contains("GL_ARB_texture_non_power_of_two");
+            frameBufferObjects = extensions.Contains("GL_ARB_framebuffer_object");
 
             clock = new Stopwatch();
             clock.Start();

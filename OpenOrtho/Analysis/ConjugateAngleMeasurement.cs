@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
+using OpenTK;
+using OpenOrtho.Graphics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
 
 namespace OpenOrtho.Analysis
 {
