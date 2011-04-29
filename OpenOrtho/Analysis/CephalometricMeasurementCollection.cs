@@ -18,6 +18,7 @@ namespace OpenOrtho.Analysis
     [XmlInclude(typeof(LineDistanceMeasurement))]
     [XmlInclude(typeof(ProjectedDistanceMeasurement))]
     [XmlInclude(typeof(NormalLineDistanceMeasurement))]
+    [XmlInclude(typeof(NormalLineProjectedDistanceMeasurement))]
     [Editor(typeof(CephalometricMeasurementCollectionEditor), typeof(UITypeEditor))]
     public class CephalometricMeasurementCollection : KeyedCollection<string, CephalometricMeasurement>
     {
@@ -44,7 +45,8 @@ namespace OpenOrtho.Analysis
                     typeof(DistanceMeasurement),
                     typeof(LineDistanceMeasurement),
                     typeof(ProjectedDistanceMeasurement),
-                    typeof(NormalLineDistanceMeasurement)
+                    typeof(NormalLineDistanceMeasurement),
+                    typeof(NormalLineProjectedDistanceMeasurement)
                 };
             }
         }
