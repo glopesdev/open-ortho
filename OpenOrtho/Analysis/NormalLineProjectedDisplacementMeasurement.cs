@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 
 namespace OpenOrtho.Analysis
 {
-    public class NormalLineProjectedDistanceMeasurement : CephalometricMeasurement
+    public class NormalLineProjectedDisplacementMeasurement : CephalometricMeasurement
     {
         public override string Units
         {
@@ -41,7 +41,7 @@ namespace OpenOrtho.Analysis
 
             var intersection = Utilities.LineIntersection(normal0, normal1, lineB0, lineB1).GetValueOrDefault();
             var targetProjection = Utilities.PointOnLine(target, lineB0, lineB1);
-            return (targetProjection - intersection).Length;
+            return Utilities.ScalarProjection(targetProjection - intersection, Vector2.Normalize(lineB1 - lineB0));
         }
 
         public override void Draw(SpriteBatch spriteBatch, CephalometricPointCollection points, CephalometricMeasurementCollection measurements, DrawingOptions options)

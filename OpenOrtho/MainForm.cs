@@ -20,7 +20,7 @@ using System.IO;
 
 namespace OpenOrtho
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IMessageFilter
     {
         const float MillimetersPerInch = 1.0f / 0.03937f;
         const float MovementSpeed = 200.0f;
@@ -72,6 +72,7 @@ namespace OpenOrtho
             InitializeComponent();
             aboutBox = new AboutBox();
             analysisEditor = new AnalysisEditorForm();
+            Application.AddMessageFilter(this);
         }
 
         bool CheckUnsavedChanges()
@@ -104,6 +105,7 @@ namespace OpenOrtho
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             if (background != null) background.Dispose();
+            Application.RemoveMessageFilter(this);
             base.OnFormClosed(e);
         }
 
@@ -411,13 +413,55 @@ namespace OpenOrtho
             RenderModel();
         }
 
+        public bool PreFilterMessage(ref Message m)
+        {
+            const int WM_KEYDOWN = 0x100;
+            const int WM_KEYUP = 0x0101;
+            const int WM_SYSKEYDOWN = 0x104;
+            const int WM_SYSKEYUP = 0x105;
+
+            if ((m.Msg == WM_KEYDOWN) || (m.Msg == WM_SYSKEYDOWN))
+            {
+                var keyData = (Keys)m.WParam & Keys.KeyCode;
+                switch (keyData)
+                {
+                    case Keys.Up:
+                    case Keys.Down:
+                    case Keys.Left:
+                    case Keys.Right:
+                        OnKeyDown(new KeyEventArgs(keyData));
+                        break;
+                }
+            }
+
+            if ((m.Msg == WM_KEYUP) || (m.Msg == WM_SYSKEYUP))
+            {
+                var keyData = (Keys)m.WParam & Keys.KeyCode;
+                switch (keyData)
+                {
+                    case Keys.Up:
+                    case Keys.Down:
+                    case Keys.Left:
+                    case Keys.Right:
+                        OnKeyUp(new KeyEventArgs(keyData));
+                        break;
+                }
+            }
+
+            return false;
+        }
+
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
+                case Keys.Up:
                 case Keys.W: keyUp = true; break;
+                case Keys.Down:
                 case Keys.S: keyDown = true; break;
+                case Keys.Left:
                 case Keys.A: keyLeft = true; break;
+                case Keys.Right:
                 case Keys.D: keyRight = true; break;
                 case Keys.R: keyReset = true; break;
                 case Keys.I: keyZoomIn = true; break;
@@ -429,9 +473,13 @@ namespace OpenOrtho
         {
             switch (e.KeyCode)
             {
+                case Keys.Up:
                 case Keys.W: keyUp = false; break;
+                case Keys.Down:
                 case Keys.S: keyDown = false; break;
+                case Keys.Left:
                 case Keys.A: keyLeft = false; break;
+                case Keys.Right:
                 case Keys.D: keyRight = false; break;
                 case Keys.R: keyReset = false; break;
                 case Keys.I: keyZoomIn = false; break;
@@ -500,6 +548,7 @@ namespace OpenOrtho
                     var radiographUri = new Uri(project.Radiograph);
                     radiographUri = projectUri.MakeRelativeUri(radiographUri);
                     project.Radiograph = radiographUri.ToString();
+                    analysisPropertyGrid.Refresh();
                 }
                 saveToolStripMenuItem_Click(this, e);
             }
