@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 
 namespace OpenOrtho.Analysis
 {
-    public class LineDistanceMeasurement : CephalometricMeasurement
+    public class LineDisplacementMeasurement : CephalometricMeasurement
     {
         public override string Units
         {
@@ -24,7 +24,7 @@ namespace OpenOrtho.Analysis
 
         public override float Measure(CephalometricPointCollection points, CephalometricMeasurementCollection measurements)
         {
-            return Utilities.PointLineDistance(points[Point].Measurement, points[Line0].Measurement, points[Line1].Measurement);
+            return Utilities.PointLineDisplacement(points[Point].Measurement, points[Line0].Measurement, points[Line1].Measurement);
         }
 
         public override void Draw(SpriteBatch spriteBatch, CephalometricPointCollection points, CephalometricMeasurementCollection measurements, DrawingOptions options)

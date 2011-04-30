@@ -142,5 +142,17 @@ namespace OpenOrtho
         {
             return Vector3.Cross(point - line0, point - line1).Length / (line1 - line0).Length;
         }
+
+        public static float PointLineDisplacement(Vector2 point, Vector2 line0, Vector2 line1)
+        {
+            var projection = Utilities.PointOnLine(point, line0, line1);
+            var normal = (line1 - line0).PerpendicularRight;
+            return ScalarProjection(point - projection, normal);
+        }
+
+        public static float ScalarProjection(Vector2 v1, Vector2 v2)
+        {
+            return Vector2.Dot(v1, v2) / v2.Length;
+        }
     }
 }

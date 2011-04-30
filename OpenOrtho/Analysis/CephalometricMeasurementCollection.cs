@@ -15,10 +15,10 @@ namespace OpenOrtho.Analysis
     [XmlInclude(typeof(ConjugateAngleMeasurement))]
     [XmlInclude(typeof(NormalLineAngleMeasurement))]
     [XmlInclude(typeof(DistanceMeasurement))]
-    [XmlInclude(typeof(LineDistanceMeasurement))]
-    [XmlInclude(typeof(ProjectedDistanceMeasurement))]
-    [XmlInclude(typeof(NormalLineDistanceMeasurement))]
-    [XmlInclude(typeof(NormalLineProjectedDistanceMeasurement))]
+    [XmlInclude(typeof(LineDisplacementMeasurement))]
+    [XmlInclude(typeof(ProjectedDisplacementMeasurement))]
+    [XmlInclude(typeof(NormalLineDisplacementMeasurement))]
+    [XmlInclude(typeof(NormalLineProjectedDisplacementMeasurement))]
     [Editor(typeof(CephalometricMeasurementCollectionEditor), typeof(UITypeEditor))]
     public class CephalometricMeasurementCollection : KeyedCollection<string, CephalometricMeasurement>
     {
@@ -43,10 +43,10 @@ namespace OpenOrtho.Analysis
                     typeof(ConjugateAngleMeasurement),
                     typeof(NormalLineAngleMeasurement),
                     typeof(DistanceMeasurement),
-                    typeof(LineDistanceMeasurement),
-                    typeof(ProjectedDistanceMeasurement),
-                    typeof(NormalLineDistanceMeasurement),
-                    typeof(NormalLineProjectedDistanceMeasurement)
+                    typeof(LineDisplacementMeasurement),
+                    typeof(ProjectedDisplacementMeasurement),
+                    typeof(NormalLineDisplacementMeasurement),
+                    typeof(NormalLineProjectedDisplacementMeasurement)
                 };
             }
         }
