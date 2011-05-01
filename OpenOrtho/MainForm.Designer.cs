@@ -72,7 +72,6 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.setScaleButton = new System.Windows.Forms.Button();
@@ -100,6 +99,7 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
+            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -493,21 +493,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(624, 371);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(3, 3);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(490, 365);
-            this.glControl.TabIndex = 0;
-            this.glControl.VSync = false;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
@@ -571,7 +556,7 @@
             this.groupBox2.Size = new System.Drawing.Size(116, 134);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Analysis";
+            this.groupBox2.Text = "Properties";
             // 
             // analysisPropertyGrid
             // 
@@ -593,12 +578,12 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Measurements";
             // 
-            // reportTextBox
+            // measurementsTextBox
             // 
             this.measurementsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.measurementsTextBox.Location = new System.Drawing.Point(3, 16);
             this.measurementsTextBox.Multiline = true;
-            this.measurementsTextBox.Name = "reportTextBox";
+            this.measurementsTextBox.Name = "measurementsTextBox";
             this.measurementsTextBox.ReadOnly = true;
             this.measurementsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.measurementsTextBox.Size = new System.Drawing.Size(110, 115);
@@ -770,6 +755,21 @@
             // 
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
+            // 
+            // glControl
+            // 
+            this.glControl.BackColor = System.Drawing.Color.Black;
+            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControl.Location = new System.Drawing.Point(3, 3);
+            this.glControl.Name = "glControl";
+            this.glControl.Size = new System.Drawing.Size(490, 365);
+            this.glControl.TabIndex = 0;
+            this.glControl.VSync = false;
+            this.glControl.Load += new System.EventHandler(this.glControl_Load);
+            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
+            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
             // 
             // commandExecutor
             // 

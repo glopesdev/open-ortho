@@ -454,6 +454,8 @@ namespace OpenOrtho
             const int WM_SYSKEYDOWN = 0x104;
             const int WM_SYSKEYUP = 0x105;
 
+            if (!glControl.Focused) return false;
+
             if ((m.Msg == WM_KEYDOWN) || (m.Msg == WM_SYSKEYDOWN))
             {
                 var keyData = (Keys)m.WParam & Keys.KeyCode;
@@ -487,6 +489,8 @@ namespace OpenOrtho
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (analysisPropertyGrid.ContainsFocus) return;
+
             switch (e.KeyCode)
             {
                 case Keys.Up:
