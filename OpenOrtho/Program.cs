@@ -11,11 +11,18 @@ namespace OpenOrtho
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            var mainForm = new MainForm();
+            mainForm.DesktopBounds = Screen.PrimaryScreen.Bounds;
+            if (args.Length > 0 && System.IO.File.Exists(args[0]))
+            {
+                mainForm.StartupProject = args[0];
+            }
+
+            Application.Run(mainForm);
         }
     }
 }
