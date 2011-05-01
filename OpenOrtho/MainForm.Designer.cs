@@ -58,8 +58,8 @@
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.namesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.distanceLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.auxiliaryLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.distanceLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analysisEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,12 +72,15 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.setScaleButton = new System.Windows.Forms.Button();
             this.scaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.analysisPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.measurementsTextBox = new System.Windows.Forms.TextBox();
             this.menuToolStrip = new System.Windows.Forms.ToolStrip();
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -97,7 +100,6 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
-            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -110,6 +112,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scaleNumericUpDown)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -348,7 +351,7 @@
             // 
             this.namesToolStripMenuItem.CheckOnClick = true;
             this.namesToolStripMenuItem.Name = "namesToolStripMenuItem";
-            this.namesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.namesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.namesToolStripMenuItem.Text = "&Names";
             // 
             // mainLinesToolStripMenuItem
@@ -357,15 +360,8 @@
             this.mainLinesToolStripMenuItem.CheckOnClick = true;
             this.mainLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainLinesToolStripMenuItem.Name = "mainLinesToolStripMenuItem";
-            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.mainLinesToolStripMenuItem.Text = "&Main Lines";
-            // 
-            // distanceLinesToolStripMenuItem
-            // 
-            this.distanceLinesToolStripMenuItem.CheckOnClick = true;
-            this.distanceLinesToolStripMenuItem.Name = "distanceLinesToolStripMenuItem";
-            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.distanceLinesToolStripMenuItem.Text = "&Distance Lines";
             // 
             // auxiliaryLinesToolStripMenuItem
             // 
@@ -373,8 +369,15 @@
             this.auxiliaryLinesToolStripMenuItem.CheckOnClick = true;
             this.auxiliaryLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.auxiliaryLinesToolStripMenuItem.Name = "auxiliaryLinesToolStripMenuItem";
-            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.auxiliaryLinesToolStripMenuItem.Text = "&Auxiliary Lines";
+            // 
+            // distanceLinesToolStripMenuItem
+            // 
+            this.distanceLinesToolStripMenuItem.CheckOnClick = true;
+            this.distanceLinesToolStripMenuItem.Name = "distanceLinesToolStripMenuItem";
+            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.distanceLinesToolStripMenuItem.Text = "&Distance Lines";
             // 
             // toolsToolStripMenuItem
             // 
@@ -387,7 +390,7 @@
             // analysisEditorToolStripMenuItem
             // 
             this.analysisEditorToolStripMenuItem.Name = "analysisEditorToolStripMenuItem";
-            this.analysisEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.analysisEditorToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.analysisEditorToolStripMenuItem.Text = "&Analysis Editor";
             this.analysisEditorToolStripMenuItem.Click += new System.EventHandler(this.analysisEditorToolStripMenuItem_Click);
             // 
@@ -490,18 +493,35 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(624, 371);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // glControl
+            // 
+            this.glControl.BackColor = System.Drawing.Color.Black;
+            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControl.Location = new System.Drawing.Point(3, 3);
+            this.glControl.Name = "glControl";
+            this.glControl.Size = new System.Drawing.Size(490, 365);
+            this.glControl.TabIndex = 0;
+            this.glControl.VSync = false;
+            this.glControl.Load += new System.EventHandler(this.glControl_Load);
+            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
+            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
+            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Controls.Add(this.groupBox1, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.groupBox3, 0, 1);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(499, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34.0081F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65.99191F));
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 85F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(122, 365);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
@@ -546,9 +566,9 @@
             // 
             this.groupBox2.Controls.Add(this.analysisPropertyGrid);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 127);
+            this.groupBox2.Location = new System.Drawing.Point(3, 228);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(116, 235);
+            this.groupBox2.Size = new System.Drawing.Size(116, 134);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Analysis";
@@ -559,8 +579,30 @@
             this.analysisPropertyGrid.Enabled = false;
             this.analysisPropertyGrid.Location = new System.Drawing.Point(3, 16);
             this.analysisPropertyGrid.Name = "analysisPropertyGrid";
-            this.analysisPropertyGrid.Size = new System.Drawing.Size(110, 216);
+            this.analysisPropertyGrid.Size = new System.Drawing.Size(110, 115);
             this.analysisPropertyGrid.TabIndex = 0;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.measurementsTextBox);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(3, 88);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(116, 134);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Measurements";
+            // 
+            // reportTextBox
+            // 
+            this.measurementsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.measurementsTextBox.Location = new System.Drawing.Point(3, 16);
+            this.measurementsTextBox.Multiline = true;
+            this.measurementsTextBox.Name = "reportTextBox";
+            this.measurementsTextBox.ReadOnly = true;
+            this.measurementsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.measurementsTextBox.Size = new System.Drawing.Size(110, 115);
+            this.measurementsTextBox.TabIndex = 0;
             // 
             // menuToolStrip
             // 
@@ -729,21 +771,6 @@
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
             // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(3, 3);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(490, 365);
-            this.glControl.TabIndex = 0;
-            this.glControl.VSync = false;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
-            // 
             // commandExecutor
             // 
             this.commandExecutor.StatusChanged += new System.EventHandler(this.commandExecutor_StatusChanged);
@@ -758,6 +785,7 @@
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "MainForm";
             this.Text = "OpenOrtho";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyUp);
             this.menuStrip.ResumeLayout(false);
@@ -776,6 +804,8 @@
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.scaleNumericUpDown)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -854,6 +884,8 @@
         private System.Windows.Forms.ToolStripMenuItem disableAllMeasurementsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem auxiliaryLinesToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox measurementsTextBox;
 
     }
 }

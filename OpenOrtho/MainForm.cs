@@ -45,6 +45,7 @@ namespace OpenOrtho
         bool setScale;
         List<Vector2> scaleRefs;
         List<Vector2> arcPoints;
+        StringBuilder measurementsReport;
 
         bool fixPoint;
         Vector2 originalMeasurement;
@@ -377,6 +378,7 @@ namespace OpenOrtho
             printDocument.DefaultPageSettings.Landscape = true;
             scaleRefs = new List<Vector2>(2);
             arcPoints = new List<Vector2>(11);
+            measurementsReport = new StringBuilder();
 
             var extensions = GL.GetString(StringName.Extensions).Split(' ');
             nonPowerOfTwo = extensions.Contains("GL_ARB_texture_non_power_of_two");
@@ -414,6 +416,19 @@ namespace OpenOrtho
 
                 UpdateModel((float)(elapsedTime / 1000.0));
                 RenderModel();
+
+                if (project == null) continue;
+                measurementsReport.Clear();
+
+                foreach (var measurement in project.Analysis.Measurements)
+                {
+                    if (!measurement.Enabled) continue;
+
+                    var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(project.Analysis.Points, project.Analysis.Measurements), measurement.Units);
+                    measurementsReport.AppendLine(readout);
+                }
+
+                measurementsTextBox.Text = measurementsReport.ToString();
             }
         }
 
