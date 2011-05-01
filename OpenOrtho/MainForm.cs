@@ -75,6 +75,8 @@ namespace OpenOrtho
             Application.AddMessageFilter(this);
         }
 
+        public string StartupProject { get; set; }
+
         bool CheckUnsavedChanges()
         {
             if (project != null && saveVersion != version)
@@ -164,7 +166,19 @@ namespace OpenOrtho
             saveVersion = version;
         }
 
-        void LoadProject(string projectDir)
+        void OpenProject(string fileName)
+        {
+            saveProjectDialog.FileName = fileName;
+            using (var reader = XmlReader.Create(fileName))
+            {
+                var serializer = new XmlSerializer(typeof(OrthoProject));
+                project = (OrthoProject)serializer.Deserialize(reader);
+                ClearSetScale();
+                InitializeProject(Path.GetDirectoryName(fileName));
+            }
+        }
+
+        void InitializeProject(string projectDir)
         {
             if (background != null) background.Dispose();
 
@@ -382,6 +396,11 @@ namespace OpenOrtho
 
             Application.Idle += new EventHandler(Application_Idle);
             loaded = true;
+
+            if (!string.IsNullOrEmpty(StartupProject))
+            {
+                OpenProject(StartupProject);
+            }
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -498,7 +517,7 @@ namespace OpenOrtho
                 project = new OrthoProject();
                 project.Radiograph = openImageDialog.FileName;
                 setScale = true;
-                LoadProject(projectDir);
+                InitializeProject(projectDir);
             }
         }
 
@@ -508,14 +527,7 @@ namespace OpenOrtho
 
             if (openProjectDialog.ShowDialog() == DialogResult.OK)
             {
-                saveProjectDialog.FileName = openProjectDialog.FileName;
-                using (var reader = XmlReader.Create(openProjectDialog.FileName))
-                {
-                    var serializer = new XmlSerializer(typeof(OrthoProject));
-                    project = (OrthoProject)serializer.Deserialize(reader);
-                    ClearSetScale();
-                    LoadProject(Path.GetDirectoryName(openProjectDialog.FileName));
-                }
+                OpenProject(openProjectDialog.FileName);
             }
         }
 
