@@ -165,6 +165,7 @@ namespace OpenOrtho
             commandExecutor.Clear();
             version = 0;
             saveVersion = version;
+            glControl.Focus();
         }
 
         void OpenProject(string fileName)
@@ -228,6 +229,8 @@ namespace OpenOrtho
         void UpdateStatus()
         {
             var nextPlacement = project.Analysis.Points.FirstOrDefault(p => !p.Placed);
+            skipPointToolStripMenuItem.Enabled = !setScale && nextPlacement != null;
+            skipPointToolStripButton.Enabled = !setScale && nextPlacement != null;
 
             if (setScale)
             {
@@ -489,7 +492,7 @@ namespace OpenOrtho
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (analysisPropertyGrid.ContainsFocus) return;
+            if (analysisPropertyGrid.ContainsFocus || scaleNumericUpDown.ContainsFocus) return;
 
             switch (e.KeyCode)
             {
@@ -587,7 +590,7 @@ namespace OpenOrtho
 
         private void glControl_MouseClick(object sender, MouseEventArgs e)
         {
-            if (project == null) return;
+            if (project == null || e.Button != MouseButtons.Left) return;
 
             if (setScale && scaleRefs.Count < scaleRefs.Capacity)
             {
@@ -780,6 +783,17 @@ namespace OpenOrtho
             foreach (var measurement in project.Analysis.Measurements)
             {
                 measurement.Enabled = false;
+            }
+        }
+
+        private void skipPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var point = project.Analysis.Points.FirstOrDefault(p => !p.Placed);
+            if (point != null)
+            {
+                commandExecutor.Execute(
+                    () => { point.Placed = true; UpdateStatus(); },
+                    () => { point.Placed = false; UpdateStatus(); });
             }
         }
     }

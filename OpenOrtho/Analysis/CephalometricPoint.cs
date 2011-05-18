@@ -9,6 +9,11 @@ namespace OpenOrtho.Analysis
 {
     public class CephalometricPoint
     {
+        public CephalometricPoint()
+        {
+            Measurement = new Vector2(float.NaN, float.NaN);
+        }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
