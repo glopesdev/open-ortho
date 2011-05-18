@@ -99,6 +99,9 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.skipPointToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.skipPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
@@ -247,6 +250,7 @@
             this.enableAllMeasurementsToolStripMenuItem,
             this.disableAllMeasurementsToolStripMenuItem,
             this.toolStripSeparator9,
+            this.skipPointToolStripMenuItem,
             this.selectAnalysisToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
@@ -351,7 +355,7 @@
             // 
             this.namesToolStripMenuItem.CheckOnClick = true;
             this.namesToolStripMenuItem.Name = "namesToolStripMenuItem";
-            this.namesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.namesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.namesToolStripMenuItem.Text = "&Names";
             // 
             // mainLinesToolStripMenuItem
@@ -360,7 +364,7 @@
             this.mainLinesToolStripMenuItem.CheckOnClick = true;
             this.mainLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainLinesToolStripMenuItem.Name = "mainLinesToolStripMenuItem";
-            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mainLinesToolStripMenuItem.Text = "&Main Lines";
             // 
             // auxiliaryLinesToolStripMenuItem
@@ -369,14 +373,14 @@
             this.auxiliaryLinesToolStripMenuItem.CheckOnClick = true;
             this.auxiliaryLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.auxiliaryLinesToolStripMenuItem.Name = "auxiliaryLinesToolStripMenuItem";
-            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.auxiliaryLinesToolStripMenuItem.Text = "&Auxiliary Lines";
             // 
             // distanceLinesToolStripMenuItem
             // 
             this.distanceLinesToolStripMenuItem.CheckOnClick = true;
             this.distanceLinesToolStripMenuItem.Name = "distanceLinesToolStripMenuItem";
-            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.distanceLinesToolStripMenuItem.Text = "&Distance Lines";
             // 
             // toolsToolStripMenuItem
@@ -604,11 +608,13 @@
             this.cutToolStripButton,
             this.copyToolStripButton,
             this.pasteToolStripButton,
+            this.toolStripSeparator10,
+            this.skipPointToolStripButton,
             this.toolStripSeparator7,
             this.helpToolStripButton});
             this.menuToolStrip.Location = new System.Drawing.Point(3, 24);
             this.menuToolStrip.Name = "menuToolStrip";
-            this.menuToolStrip.Size = new System.Drawing.Size(260, 25);
+            this.menuToolStrip.Size = new System.Drawing.Size(320, 25);
             this.menuToolStrip.TabIndex = 1;
             // 
             // newToolStripButton
@@ -756,6 +762,31 @@
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
             // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            // 
+            // skipPointToolStripButton
+            // 
+            this.skipPointToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.skipPointToolStripButton.Enabled = false;
+            this.skipPointToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("skipPointToolStripButton.Image")));
+            this.skipPointToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.skipPointToolStripButton.Name = "skipPointToolStripButton";
+            this.skipPointToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.skipPointToolStripButton.Text = "Skip Point";
+            this.skipPointToolStripButton.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
+            // 
+            // skipPointToolStripMenuItem
+            // 
+            this.skipPointToolStripMenuItem.Enabled = false;
+            this.skipPointToolStripMenuItem.Name = "skipPointToolStripMenuItem";
+            this.skipPointToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.skipPointToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.skipPointToolStripMenuItem.Text = "S&kip Point";
+            this.skipPointToolStripMenuItem.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
+            // 
             // glControl
             // 
             this.glControl.BackColor = System.Drawing.Color.Black;
@@ -886,6 +917,9 @@
         private System.Windows.Forms.ToolStripMenuItem auxiliaryLinesToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox measurementsTextBox;
+        private System.Windows.Forms.ToolStripMenuItem skipPointToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripButton skipPointToolStripButton;
 
     }
 }
