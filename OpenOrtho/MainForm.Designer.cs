@@ -355,7 +355,7 @@
             // 
             this.namesToolStripMenuItem.CheckOnClick = true;
             this.namesToolStripMenuItem.Name = "namesToolStripMenuItem";
-            this.namesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.namesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.namesToolStripMenuItem.Text = "&Names";
             // 
             // mainLinesToolStripMenuItem
@@ -364,7 +364,7 @@
             this.mainLinesToolStripMenuItem.CheckOnClick = true;
             this.mainLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mainLinesToolStripMenuItem.Name = "mainLinesToolStripMenuItem";
-            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mainLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.mainLinesToolStripMenuItem.Text = "&Main Lines";
             // 
             // auxiliaryLinesToolStripMenuItem
@@ -373,14 +373,14 @@
             this.auxiliaryLinesToolStripMenuItem.CheckOnClick = true;
             this.auxiliaryLinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.auxiliaryLinesToolStripMenuItem.Name = "auxiliaryLinesToolStripMenuItem";
-            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.auxiliaryLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.auxiliaryLinesToolStripMenuItem.Text = "&Auxiliary Lines";
             // 
             // distanceLinesToolStripMenuItem
             // 
             this.distanceLinesToolStripMenuItem.CheckOnClick = true;
             this.distanceLinesToolStripMenuItem.Name = "distanceLinesToolStripMenuItem";
-            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.distanceLinesToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.distanceLinesToolStripMenuItem.Text = "&Distance Lines";
             // 
             // toolsToolStripMenuItem
@@ -550,6 +550,11 @@
             this.scaleNumericUpDown.Name = "scaleNumericUpDown";
             this.scaleNumericUpDown.Size = new System.Drawing.Size(103, 20);
             this.scaleNumericUpDown.TabIndex = 0;
+            this.scaleNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             // 
             // groupBox2
             // 
@@ -614,7 +619,7 @@
             this.helpToolStripButton});
             this.menuToolStrip.Location = new System.Drawing.Point(3, 24);
             this.menuToolStrip.Name = "menuToolStrip";
-            this.menuToolStrip.Size = new System.Drawing.Size(320, 25);
+            this.menuToolStrip.Size = new System.Drawing.Size(289, 25);
             this.menuToolStrip.TabIndex = 1;
             // 
             // newToolStripButton
