@@ -581,7 +581,7 @@ namespace OpenOrtho
                 {
                     var radiographUri = new Uri(project.Radiograph);
                     radiographUri = projectUri.MakeRelativeUri(radiographUri);
-                    project.Radiograph = radiographUri.ToString();
+                    project.Radiograph = Uri.UnescapeDataString(radiographUri.ToString());
                     analysisPropertyGrid.Refresh();
                 }
                 saveToolStripMenuItem_Click(this, e);
