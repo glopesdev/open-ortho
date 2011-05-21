@@ -175,7 +175,7 @@ namespace OpenOrtho
             {
                 var serializer = new XmlSerializer(typeof(OrthoProject));
                 project = (OrthoProject)serializer.Deserialize(reader);
-                ClearSetScale();
+                UpdateSetScale(false);
                 InitializeProject(Path.GetDirectoryName(fileName));
             }
         }
@@ -210,11 +210,11 @@ namespace OpenOrtho
             ResetProjectStatus();
         }
 
-        void ClearSetScale()
+        void UpdateSetScale(bool status)
         {
             scaleRefs.Clear();
-            setScale = false;
-            setScaleButton.Enabled = scaleNumericUpDown.Enabled = false;
+            setScale = status;
+            setScaleButton.Enabled = scaleNumericUpDown.Enabled = status;
         }
 
         void UpdateScale()
@@ -538,7 +538,7 @@ namespace OpenOrtho
                 saveProjectDialog.InitialDirectory = projectDir;
                 project = new OrthoProject();
                 project.Radiograph = openImageDialog.FileName;
-                setScale = true;
+                UpdateSetScale(true);
                 InitializeProject(projectDir);
             }
         }
@@ -556,6 +556,11 @@ namespace OpenOrtho
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (project == null) return;
+            if (setScale)
+            {
+                MessageBox.Show("Scale must be set before saving project.", "Scale not set", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
             if (string.IsNullOrEmpty(saveProjectDialog.FileName)) saveAsToolStripMenuItem_Click(this, e);
             else
@@ -661,7 +666,7 @@ namespace OpenOrtho
             project.PixelsPerMillimeter = scaleLength / (float)scaleNumericUpDown.Value;
             analysisPropertyGrid.Refresh();
 
-            ClearSetScale();
+            UpdateSetScale(false);
             ResetProjectStatus();
         }
 
