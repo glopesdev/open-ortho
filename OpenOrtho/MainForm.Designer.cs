@@ -54,6 +54,7 @@
             this.enableAllMeasurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableAllMeasurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.skipPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAnalysisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.namesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +73,7 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.setScaleButton = new System.Windows.Forms.Button();
@@ -92,6 +94,8 @@
             this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.skipPointToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
@@ -99,10 +103,6 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.skipPointToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.skipPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -333,6 +333,15 @@
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(207, 6);
             // 
+            // skipPointToolStripMenuItem
+            // 
+            this.skipPointToolStripMenuItem.Enabled = false;
+            this.skipPointToolStripMenuItem.Name = "skipPointToolStripMenuItem";
+            this.skipPointToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.skipPointToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.skipPointToolStripMenuItem.Text = "S&kip Point";
+            this.skipPointToolStripMenuItem.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
+            // 
             // selectAnalysisToolStripMenuItem
             // 
             this.selectAnalysisToolStripMenuItem.Name = "selectAnalysisToolStripMenuItem";
@@ -497,6 +506,21 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(624, 371);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // glControl
+            // 
+            this.glControl.BackColor = System.Drawing.Color.Black;
+            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControl.Location = new System.Drawing.Point(3, 3);
+            this.glControl.Name = "glControl";
+            this.glControl.Size = new System.Drawing.Size(490, 365);
+            this.glControl.TabIndex = 0;
+            this.glControl.VSync = false;
+            this.glControl.Load += new System.EventHandler(this.glControl_Load);
+            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
+            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
+            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
@@ -619,7 +643,7 @@
             this.helpToolStripButton});
             this.menuToolStrip.Location = new System.Drawing.Point(3, 24);
             this.menuToolStrip.Name = "menuToolStrip";
-            this.menuToolStrip.Size = new System.Drawing.Size(289, 25);
+            this.menuToolStrip.Size = new System.Drawing.Size(320, 25);
             this.menuToolStrip.TabIndex = 1;
             // 
             // newToolStripButton
@@ -724,6 +748,22 @@
             this.pasteToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.pasteToolStripButton.Text = "&Paste";
             // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
+            // 
+            // skipPointToolStripButton
+            // 
+            this.skipPointToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.skipPointToolStripButton.Enabled = false;
+            this.skipPointToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("skipPointToolStripButton.Image")));
+            this.skipPointToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.skipPointToolStripButton.Name = "skipPointToolStripButton";
+            this.skipPointToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.skipPointToolStripButton.Text = "Skip Point";
+            this.skipPointToolStripButton.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
+            // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
@@ -766,46 +806,6 @@
             // 
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
-            // 
-            // skipPointToolStripButton
-            // 
-            this.skipPointToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.skipPointToolStripButton.Enabled = false;
-            this.skipPointToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("skipPointToolStripButton.Image")));
-            this.skipPointToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.skipPointToolStripButton.Name = "skipPointToolStripButton";
-            this.skipPointToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.skipPointToolStripButton.Text = "Skip Point";
-            this.skipPointToolStripButton.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
-            // 
-            // skipPointToolStripMenuItem
-            // 
-            this.skipPointToolStripMenuItem.Enabled = false;
-            this.skipPointToolStripMenuItem.Name = "skipPointToolStripMenuItem";
-            this.skipPointToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
-            this.skipPointToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.skipPointToolStripMenuItem.Text = "S&kip Point";
-            this.skipPointToolStripMenuItem.Click += new System.EventHandler(this.skipPointToolStripMenuItem_Click);
-            // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(3, 3);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(490, 365);
-            this.glControl.TabIndex = 0;
-            this.glControl.VSync = false;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
             // 
             // commandExecutor
             // 
