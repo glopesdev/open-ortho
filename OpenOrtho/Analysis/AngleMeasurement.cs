@@ -73,7 +73,7 @@ namespace OpenOrtho.Analysis
 
                     for (int i = 0; i < arcPoints.Capacity; i++)
                     {
-                        arcPoints.Add(intersection.Value + direction * 4);
+                        arcPoints.Add(intersection.GetValueOrDefault() + direction * 4);
                         direction = Utilities.Rotate(direction, angleIncrement);
                     }
 
