@@ -162,9 +162,9 @@ namespace OpenOrtho
             UpdateScale();
             ResetCamera();
             UpdateStatus();
+            version = -1;
+            saveVersion = 0;
             commandExecutor.Clear();
-            version = 0;
-            saveVersion = version;
             glControl.Focus();
         }
 
@@ -208,6 +208,11 @@ namespace OpenOrtho
             analysisPropertyGrid.SelectedObject = project;
             analysisPropertyGrid.Enabled = true;
             ResetProjectStatus();
+        }
+
+        void UpdateSaveStatus()
+        {
+            saveToolStripButton.Enabled = saveToolStripMenuItem.Enabled = saveVersion != version;
         }
 
         void UpdateSetScale(bool status)
@@ -570,6 +575,7 @@ namespace OpenOrtho
                     var serializer = new XmlSerializer(typeof(OrthoProject));
                     serializer.Serialize(writer, project);
                     saveVersion = version;
+                    UpdateSaveStatus();
                 }
             }
         }
@@ -647,6 +653,7 @@ namespace OpenOrtho
             redoToolStripButton.Enabled = commandExecutor.CanRedo;
             redoToolStripMenuItem.Enabled = commandExecutor.CanRedo;
             version++;
+            UpdateSaveStatus();
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
