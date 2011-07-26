@@ -380,6 +380,16 @@ namespace OpenOrtho
                     select p).FirstOrDefault();
         }
 
+        RectangleF GetAnalysisBoundingBox()
+        {
+            RectangleF boundingBox = RectangleF.Empty;
+            foreach (var box in project.Analysis.Points.Select(p => new RectangleF(p.Measurement.X, p.Measurement.Y, 0, 0)))
+            {
+                boundingBox = RectangleF.Union(boundingBox, box);
+            }
+            return boundingBox;
+        }
+
         private void glControl_Load(object sender, EventArgs e)
         {
             glControl.VSync = true;
@@ -751,8 +761,22 @@ namespace OpenOrtho
 
         private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            var offset = new PointF(e.PageSettings.PrintableArea.X, e.PageSettings.PrintableArea.Y);
-            e.Graphics.DrawImage(screenCapture, offset);
+            var printableArea = e.PageSettings.PrintableArea;
+            var offset = new PointF(printableArea.X, printableArea.Y);
+            var captureHeightInMillimeters = screenCapture.Height / project.PixelsPerMillimeter;
+            var printableHeightInMillimeters = ((e.PageSettings.Landscape ? printableArea.Width : printableArea.Height) / 100) * MillimetersPerInch;
+
+            if (captureHeightInMillimeters > printableHeightInMillimeters)
+            {
+                var boundingBox = GetAnalysisBoundingBox();
+                var shiftY = boundingBox.Y + boundingBox.Height / 2 + captureHeightInMillimeters / 2;
+                shiftY = captureHeightInMillimeters - shiftY - printableHeightInMillimeters / 2;
+                shiftY *= project.PixelsPerMillimeter;
+
+                var printableHeightInPixels = printableHeightInMillimeters * project.PixelsPerMillimeter;
+                e.Graphics.DrawImage(screenCapture, offset.X, offset.Y, new RectangleF(0, shiftY, screenCapture.Width, printableHeightInPixels), GraphicsUnit.Pixel);
+            }
+            else e.Graphics.DrawImage(screenCapture, offset);
 
             var analysis = project.Analysis;
             offset.X += screenCapture.Width / screenCapture.HorizontalResolution * deviceDpiX + 50;
