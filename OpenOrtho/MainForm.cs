@@ -39,6 +39,8 @@ namespace OpenOrtho
         bool frameBufferObjects;
         int backgroundWidth;
         int backgroundHeight;
+        int textureWidth;
+        int textureHeight;
         Texture2D background;
         SpriteBatch spriteBatch;
 
@@ -120,14 +122,16 @@ namespace OpenOrtho
 
         void CaptureScreen()
         {
+            if (screenCapture != null) screenCapture.Dispose();
+
             using (var graphics = glControl.CreateGraphics())
             {
-                if (frameBufferObjects && nonPowerOfTwo)
+                if (frameBufferObjects)
                 {
-                    using (var renderTarget = new RenderTarget2D(backgroundWidth, backgroundHeight))
+                    using (var renderTarget = new RenderTarget2D(textureWidth, textureHeight))
                     {
                         var pixelsPerMeter = spriteBatch.PixelsPerMeter;
-                        spriteBatch.SetDimensions(backgroundWidth, backgroundHeight);
+                        spriteBatch.SetDimensions(textureWidth, textureHeight);
                         spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
                         renderTarget.Begin();
@@ -135,8 +139,19 @@ namespace OpenOrtho
                         renderTarget.End();
 
                         screenCapture = renderTarget.Texture.ToBitmap();
-                        screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
+                        if (textureWidth != backgroundWidth || textureHeight != backgroundHeight)
+                        {
+                            using (var rawCapture = screenCapture)
+                            {
+                                screenCapture = rawCapture.Clone(new Rectangle(
+                                    (textureWidth - backgroundWidth) / 2,
+                                    (textureHeight - backgroundHeight) / 2,
+                                    backgroundWidth, backgroundHeight),
+                                    screenCapture.PixelFormat);
+                            }
+                        }
 
+                        screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
                         spriteBatch.PixelsPerMeter = pixelsPerMeter;
                         spriteBatch.SetDimensions(glControl.Width, glControl.Height);
                     }
@@ -191,13 +206,13 @@ namespace OpenOrtho
                 GL.GetInteger(GetPName.MaxTextureSize, query);
                 var maxSize = query[0];
 
-                backgroundWidth = bitmap.Width;
-                backgroundHeight = bitmap.Height;
+                textureWidth = backgroundWidth = bitmap.Width;
+                textureHeight = backgroundHeight = bitmap.Height;
                 if (!nonPowerOfTwo || backgroundWidth > maxSize || backgroundHeight > maxSize)
                 {
-                    var width = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundWidth));
-                    var height = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundHeight));
-                    using (var potsBitmap = new Bitmap(bitmap, width, height))
+                    textureWidth = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundWidth));
+                    textureHeight = Math.Min(maxSize, Utilities.NearestPowerOfTwo(backgroundHeight));
+                    using (var potsBitmap = new Bitmap(bitmap, textureWidth, textureHeight))
                     {
                         background = Texture2D.FromBitmap(potsBitmap);
                     }
