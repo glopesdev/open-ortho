@@ -134,9 +134,16 @@ namespace OpenOrtho
                         spriteBatch.SetDimensions(textureWidth, textureHeight);
                         spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
+                        var cameraZoom = camera.Zoom;
+                        var cameraPos = camera.Position;
+                        ResetCamera();
+
                         renderTarget.Begin();
                         RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
                         renderTarget.End();
+
+                        camera.Zoom = cameraZoom;
+                        camera.Position = cameraPos;
 
                         screenCapture = renderTarget.Texture.ToBitmap();
                         if (textureWidth != backgroundWidth || textureHeight != backgroundHeight)
