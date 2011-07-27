@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OpenOrtho")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("TomoSoft")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OpenOrtho")]
-[assembly: AssemblyCopyright("Copyright © TomoSoft 2011")]
+[assembly: AssemblyCopyright("Copyright © Gonçalo Lopes 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
