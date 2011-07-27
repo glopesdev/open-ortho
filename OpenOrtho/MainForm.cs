@@ -126,6 +126,10 @@ namespace OpenOrtho
 
             using (var graphics = glControl.CreateGraphics())
             {
+                var cameraZoom = camera.Zoom;
+                var cameraPos = camera.Position;
+                ResetCamera();
+
                 if (frameBufferObjects)
                 {
                     using (var renderTarget = new RenderTarget2D(textureWidth, textureHeight))
@@ -134,16 +138,9 @@ namespace OpenOrtho
                         spriteBatch.SetDimensions(textureWidth, textureHeight);
                         spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
-                        var cameraZoom = camera.Zoom;
-                        var cameraPos = camera.Position;
-                        ResetCamera();
-
                         renderTarget.Begin();
                         RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
                         renderTarget.End();
-
-                        camera.Zoom = cameraZoom;
-                        camera.Position = cameraPos;
 
                         screenCapture = renderTarget.Texture.ToBitmap();
                         if (textureWidth != backgroundWidth || textureHeight != backgroundHeight)
@@ -165,16 +162,50 @@ namespace OpenOrtho
                 }
                 else
                 {
-                    var renderRectangle = GetRenderRectangle();
-                    var renderLocation = new Point(glControl.Location.X + (int)(renderRectangle.X + glControl.Width / 2f), glControl.Location.Y);
-                    var renderSize = new Size((int)renderRectangle.Width, (int)renderRectangle.Height);
-                    screenCapture = new Bitmap(renderSize.Width, renderSize.Height, graphics);
-                    screenCapture.SetResolution(spriteBatch.PixelsPerMeter * MillimetersPerInch, spriteBatch.PixelsPerMeter * MillimetersPerInch);
+                    screenCapture = new Bitmap(backgroundWidth, backgroundHeight);
+                    var blockColumns = backgroundWidth / glControl.Width;
+                    var blockRows = backgroundHeight / glControl.Height;
+                    var remainderWidth = backgroundWidth % glControl.Width;
+                    var remainderHeight = backgroundHeight % glControl.Height;
 
-                    var captureGraphics = System.Drawing.Graphics.FromImage(screenCapture);
-                    captureGraphics.CopyFromScreen(glControl.PointToScreen(renderLocation), Point.Empty, renderSize);
+                    var pixelsPerMeter = spriteBatch.PixelsPerMeter;
+                    spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
+
+                    var viewWidthInMillimeters = glControl.Width / project.PixelsPerMillimeter;
+                    var viewHeightInMillimeters = glControl.Height / project.PixelsPerMillimeter;
+                    var widthInMillimeters = backgroundWidth / project.PixelsPerMillimeter;
+                    var heightInMillimeters = backgroundHeight / project.PixelsPerMillimeter;
+                    var offsetX = -widthInMillimeters / 2 + viewWidthInMillimeters / 2;
+                    var offsetY = -heightInMillimeters / 2 + viewHeightInMillimeters / 2;
+
+                    for (int i = 0; i <= blockRows; i++)
+                    {
+                        for (int j = 0; j <= blockColumns; j++)
+                        {
+                            if (j == blockColumns && remainderWidth == 0) continue;
+                            if (i == blockRows && remainderHeight == 0) continue;
+
+                            var captureWidth = j == blockColumns ? remainderWidth : glControl.Width;
+                            var captureHeight = i == blockRows ? remainderHeight : glControl.Height;
+                            var bitmapData = screenCapture.LockBits(new System.Drawing.Rectangle(j * glControl.Width, i * glControl.Height, captureWidth, captureHeight),
+                                                                    System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                                                                    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+                            camera.Position = new Vector2(offsetX + j * viewWidthInMillimeters, offsetY + i * viewHeightInMillimeters);
+                            RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
+                            GL.ReadPixels(0, 0, bitmapData.Width, bitmapData.Height, PixelFormat.Bgr, PixelType.UnsignedByte, bitmapData.Scan0);
+
+                            screenCapture.UnlockBits(bitmapData);
+                        }
+                    }
+
+                    screenCapture.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    screenCapture.SetResolution(project.PixelsPerMillimeter * MillimetersPerInch, project.PixelsPerMillimeter * MillimetersPerInch);
+                    spriteBatch.PixelsPerMeter = pixelsPerMeter;
                 }
 
+                camera.Zoom = cameraZoom;
+                camera.Position = cameraPos;
                 deviceDpiX = graphics.DpiX;
             }
         }
