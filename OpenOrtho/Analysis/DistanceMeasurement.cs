@@ -32,7 +32,7 @@ namespace OpenOrtho.Analysis
             {
                 var point0 = points[Point0];
                 var point1 = points[Point1];
-                if (point0.Placed && point1.Placed)
+                if (point0.MeasurementSpecified && point1.MeasurementSpecified)
                 {
                     spriteBatch.DrawVertices(new[] { point0.Measurement, point1.Measurement }, BeginMode.Lines, Color4.Violet);
                 }
