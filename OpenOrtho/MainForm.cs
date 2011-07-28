@@ -193,8 +193,9 @@ namespace OpenOrtho
 
                             camera.Position = new Vector2(offsetX + j * viewWidthInMillimeters, offsetY + i * viewHeightInMillimeters);
                             RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
-                            GL.ReadPixels(0, 0, bitmapData.Width, bitmapData.Height, PixelFormat.Bgr, PixelType.UnsignedByte, bitmapData.Scan0);
+                            glControl.SwapBuffers();
 
+                            GL.ReadPixels(0, 0, bitmapData.Width, bitmapData.Height, PixelFormat.Bgr, PixelType.UnsignedByte, bitmapData.Scan0);
                             screenCapture.UnlockBits(bitmapData);
                         }
                     }
