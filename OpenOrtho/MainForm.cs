@@ -397,7 +397,7 @@ namespace OpenOrtho
                     }
 
                     spriteBatch.DrawVertices(from point in points
-                                             where point.Placed
+                                             where point.MeasurementSpecified
                                              select point.Measurement, BeginMode.Points, Color4.Red);
 
                     var textScale = textSize * Vector2.One / camera.Zoom;
@@ -405,14 +405,14 @@ namespace OpenOrtho
                     {
                         foreach (var point in points)
                         {
-                            if (!point.Placed) continue;
+                            if (!point.MeasurementSpecified) continue;
                             spriteBatch.DrawString(font, point.Name, point.Measurement, 0, textScale, Color4.Red);
                         }
                     }
                     else if (!printing)
                     {
                         var closestPoint = ClosestPoint(PickModelPoint(), 5);
-                        if (closestPoint != null && closestPoint.Placed)
+                        if (closestPoint != null && closestPoint.MeasurementSpecified)
                         {
                             spriteBatch.DrawString(font, closestPoint.Name, closestPoint.Measurement, 0, textScale, Color4.Red);
                         }

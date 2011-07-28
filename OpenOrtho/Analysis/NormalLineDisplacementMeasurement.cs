@@ -48,7 +48,7 @@ namespace OpenOrtho.Analysis
                 var line0 = points[Line0];
                 var line1 = points[Line1];
 
-                if (point.Placed && normalLinePoint.Placed && line0.Placed && line1.Placed)
+                if (point.MeasurementSpecified && normalLinePoint.MeasurementSpecified && line0.MeasurementSpecified && line1.MeasurementSpecified)
                 {
                     var p = point.Measurement;
                     var l0 = line0.Measurement;

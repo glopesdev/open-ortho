@@ -45,7 +45,7 @@ namespace OpenOrtho.Analysis
                 var line0 = points[Line0];
                 var line1 = points[Line1];
 
-                if (point0.Placed && point1.Placed && line0.Placed && line1.Placed)
+                if (point0.MeasurementSpecified && point1.MeasurementSpecified && line0.MeasurementSpecified && line1.MeasurementSpecified)
                 {
                     var projection0 = Utilities.PointOnLine(point0.Measurement, line0.Measurement, line1.Measurement);
                     var projection1 = Utilities.PointOnLine(point1.Measurement, line0.Measurement, line1.Measurement);

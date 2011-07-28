@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using OpenTK;
 using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace OpenOrtho.Analysis
 {
     public class CephalometricPoint
     {
-        public CephalometricPoint()
-        {
-            Measurement = new Vector2(float.NaN, float.NaN);
-        }
+        Vector2? measurement;
 
         public string Name { get; set; }
 
@@ -21,6 +19,16 @@ namespace OpenOrtho.Analysis
         [Browsable(false)]
         public bool Placed { get; set; }
 
-        public Vector2 Measurement { get; set; }
+        public Vector2 Measurement
+        {
+            get { return measurement.HasValue ? measurement.Value : new Vector2(float.NaN, float.NaN); }
+            set { if(!float.IsNaN(value.X) && !float.IsNaN(value.Y)) measurement = value; }
+        }
+
+        [Browsable(false)]
+        public bool MeasurementSpecified
+        {
+            get { return Placed && measurement.HasValue; }
+        }
     }
 }
