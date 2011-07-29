@@ -194,8 +194,8 @@
   <ItemGroup>
     <FileAssociation Include=".ortho">
       <Visible>False</Visible>
-      <Description>OpenOrtho Analysis</Description>
-      <Progid>OpenOrtho.Analysis</Progid>
+      <Description>OpenOrtho Project</Description>
+      <Progid>OpenOrtho.Project</Progid>
       <DefaultIcon>Resources\OpenOrthoDocument.ico</DefaultIcon>
     </FileAssociation>
   </ItemGroup>
