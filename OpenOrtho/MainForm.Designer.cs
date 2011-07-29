@@ -73,7 +73,6 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.placementToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.setScaleButton = new System.Windows.Forms.Button();
@@ -103,6 +102,7 @@
             this.printDialog = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument = new System.Drawing.Printing.PrintDocument();
+            this.glControl = new OpenOrtho.AntiAliasedGLControl();
             this.commandExecutor = new OpenOrtho.CommandExecutor();
             this.menuStrip.SuspendLayout();
             this.toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -507,21 +507,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(624, 371);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(3, 3);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(490, 365);
-            this.glControl.TabIndex = 0;
-            this.glControl.VSync = false;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
-            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
@@ -785,10 +770,12 @@
             // 
             this.openImageDialog.Filter = "Image files (*.bmp; *.jpeg; *.jpg; *.png)|*.bmp; *.jpeg; *.jpg; *.png|All files|*" +
     ".*";
+            this.openImageDialog.Title = "Select Image";
             // 
             // openAnalysisDialog
             // 
             this.openAnalysisDialog.Filter = "OpenOrtho Analysis (*.cepha)|*.cepha|All files|*.*";
+            this.openAnalysisDialog.Title = "Select Analysis";
             // 
             // printDialog
             // 
@@ -808,6 +795,21 @@
             // 
             this.printDocument.DocumentName = "analysis";
             this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
+            // 
+            // glControl
+            // 
+            this.glControl.BackColor = System.Drawing.Color.Black;
+            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControl.Location = new System.Drawing.Point(3, 3);
+            this.glControl.Name = "glControl";
+            this.glControl.Size = new System.Drawing.Size(490, 365);
+            this.glControl.TabIndex = 0;
+            this.glControl.VSync = false;
+            this.glControl.Load += new System.EventHandler(this.glControl_Load);
+            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
+            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
             // 
             // commandExecutor
             // 
