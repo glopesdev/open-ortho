@@ -451,7 +451,9 @@ namespace OpenOrtho
         RectangleF GetAnalysisBoundingBox()
         {
             RectangleF boundingBox = RectangleF.Empty;
-            foreach (var box in project.Analysis.Points.Select(p => new RectangleF(p.Measurement.X, p.Measurement.Y, 0, 0)))
+            foreach (var box in project.Analysis.Points
+                                .Where(p => p.MeasurementSpecified)
+                                .Select(p => new RectangleF(p.Measurement.X, p.Measurement.Y, 0, 0)))
             {
                 boundingBox = RectangleF.Union(boundingBox, box);
             }
