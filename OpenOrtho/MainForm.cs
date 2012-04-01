@@ -26,6 +26,7 @@ namespace OpenOrtho
         const float MovementSpeed = 200.0f;
         const float MinZoom = 1f;
         const float MaxZoom = 100f;
+        const float DefaultMarkerSize = 3f;
 
         OrthoProject project;
         int version;
@@ -139,7 +140,7 @@ namespace OpenOrtho
                         spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
                         renderTarget.Begin();
-                        RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
+                        RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), DefaultMarkerSize, 2);
                         renderTarget.End();
 
                         screenCapture = renderTarget.Texture.ToBitmap();
@@ -192,7 +193,7 @@ namespace OpenOrtho
                                                                     System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
                             camera.Position = new Vector2(offsetX + j * viewWidthInMillimeters, offsetY + i * viewHeightInMillimeters);
-                            RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), 6, 2);
+                            RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), DefaultMarkerSize, 2);
                             glControl.SwapBuffers();
 
                             GL.ReadPixels(0, 0, bitmapData.Width, bitmapData.Height, PixelFormat.Bgr, PixelType.UnsignedByte, bitmapData.Scan0);
@@ -358,7 +359,7 @@ namespace OpenOrtho
 
         void RenderModel()
         {
-            RenderModel(GetRenderRectangle(), 3, 1);
+            RenderModel(GetRenderRectangle(), DefaultMarkerSize, 1);
         }
 
         void RenderModel(RectangleF renderRectangle, float markerSize, float textSize)
