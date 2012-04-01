@@ -249,8 +249,9 @@ namespace OpenOrtho
             var radiographPath = Path.IsPathRooted(project.Radiograph) ? project.Radiograph : Path.Combine(projectDir, project.Radiograph);
             if (!File.Exists(radiographPath))
             {
+                radiographPath = project.Radiograph;
                 project = null;
-                MessageBox.Show("Radiograph image file is missing. Unable to load project data.", "Missing radiograph image file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("Radiograph image file {0} is missing. Unable to load project data.", radiographPath), "Missing radiograph image file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
