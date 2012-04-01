@@ -232,8 +232,8 @@ namespace OpenOrtho
                 try { project = (OrthoProject)serializer.Deserialize(reader); }
                 catch (InvalidOperationException)
                 {
-                    MessageBox.Show("Unrecognized file format. Please check if project file is compatible with this version of OpenOrtho.", "Invalid file format", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     project = null;
+                    MessageBox.Show("Unrecognized file format. Please check if project file is compatible with this version of OpenOrtho.", "Invalid file format", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -249,8 +249,8 @@ namespace OpenOrtho
             var radiographPath = Path.IsPathRooted(project.Radiograph) ? project.Radiograph : Path.Combine(projectDir, project.Radiograph);
             if (!File.Exists(radiographPath))
             {
-                MessageBox.Show("Radiograph image file is missing. Unable to load project data.", "Missing radiograph image file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 project = null;
+                MessageBox.Show("Radiograph image file is missing. Unable to load project data.", "Missing radiograph image file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
