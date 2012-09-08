@@ -53,7 +53,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>6E5A9BCC8C0A98E87844D7A312BFD3734B80988C</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>CC3C3A6566ED0E9A4E3A85F6AE8A6764C3A41CEA</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>OpenOrtho_TemporaryKey.pfx</ManifestKeyFile>
