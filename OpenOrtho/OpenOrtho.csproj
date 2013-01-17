@@ -27,8 +27,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>OpenOrtho</ProductName>
     <PublisherName>OpenOrtho</PublisherName>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
