@@ -1,0 +1,1 @@
+COPY /b 7ZSD_LZMA.sfx + config.txt + publish.7z OpenOrtho.exe
