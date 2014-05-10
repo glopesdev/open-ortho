@@ -39,10 +39,10 @@ namespace OpenOrtho.Analysis
                 var projection = Utilities.PointOnLine(point.Measurement, line0.Measurement, line1.Measurement);
                 if (point.MeasurementSpecified && line0.MeasurementSpecified && line1.MeasurementSpecified)
                 {
-                    spriteBatch.DrawVertices(new[] { line0.Measurement, line1.Measurement }, BeginMode.Lines, Color4.Orange);
+                    spriteBatch.DrawVertices(new[] { line0.Measurement, line1.Measurement }, PrimitiveType.Lines, Color4.Orange);
                     if ((options & DrawingOptions.DistanceLines) != 0)
                     {
-                        spriteBatch.DrawVertices(new[] { point.Measurement, projection }, BeginMode.Lines, Color4.Blue);
+                        spriteBatch.DrawVertices(new[] { point.Measurement, projection }, PrimitiveType.Lines, Color4.Blue);
                     }
                 }
             }

@@ -9,6 +9,8 @@ namespace OpenOrtho.Graphics
 {
     public class SpriteBatch
     {
+        static Matrix4 Identity = Matrix4.Identity;
+
         Matrix4 projection;
         Matrix4 view;
         Matrix4 translation;
@@ -49,7 +51,7 @@ namespace OpenOrtho.Graphics
         {
             Matrix4.CreateTranslation(position.X, position.Y, 0, out translation);
             Matrix4.CreateRotationZ(rotation, out rotationZ);
-            scale2D = Matrix4.Scale(scale.X, scale.Y, 1);
+            scale2D = Matrix4.CreateScale(scale.X, scale.Y, 1);
 
             Matrix4.Mult(ref rotationZ, ref scale2D, out modelView);
             Matrix4.Mult(ref modelView, ref translation, out modelView);
@@ -64,7 +66,7 @@ namespace OpenOrtho.Graphics
 
         void LoadView()
         {
-            Matrix4.Mult(ref Matrix4.Identity, ref view, out modelView);
+            Matrix4.Mult(ref Identity, ref view, out modelView);
             modelView.M41 *= PixelsPerMeter;
             modelView.M42 *= PixelsPerMeter;
 
@@ -81,7 +83,7 @@ namespace OpenOrtho.Graphics
             Draw(texture, new RectangleF(-halfWidth, -halfHeight, texture.Width, texture.Height));
         }
 
-        public void DrawVertices(IEnumerable<Vector2> vertices, BeginMode drawMode, Color4 color)
+        public void DrawVertices(IEnumerable<Vector2> vertices, PrimitiveType drawMode, Color4 color)
         {
             LoadView();
 
@@ -104,7 +106,7 @@ namespace OpenOrtho.Graphics
             GL.BindTexture(TextureTarget.Texture2D, texture.Handle);
 
             GL.Color4(Color4.White);
-            GL.Begin(BeginMode.Quads);
+            GL.Begin(PrimitiveType.Quads);
 
             GL.TexCoord2(0, 0); GL.Vertex2(rectangle.X, rectangle.Y);
             GL.TexCoord2(1, 0); GL.Vertex2(rectangle.X + rectangle.Width, rectangle.Y);
@@ -125,7 +127,7 @@ namespace OpenOrtho.Graphics
             GL.BindTexture(TextureTarget.Texture2D, font.Handle);
 
             GL.Color4(color);
-            GL.Begin(BeginMode.Quads);
+            GL.Begin(PrimitiveType.Quads);
 
             float x = 0;
             float y = 0;

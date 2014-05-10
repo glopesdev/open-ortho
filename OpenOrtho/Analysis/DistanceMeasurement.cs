@@ -34,7 +34,7 @@ namespace OpenOrtho.Analysis
                 var point1 = points[Point1];
                 if (point0.MeasurementSpecified && point1.MeasurementSpecified)
                 {
-                    spriteBatch.DrawVertices(new[] { point0.Measurement, point1.Measurement }, BeginMode.Lines, Color4.Violet);
+                    spriteBatch.DrawVertices(new[] { point0.Measurement, point1.Measurement }, PrimitiveType.Lines, Color4.Violet);
                 }
             }
         }

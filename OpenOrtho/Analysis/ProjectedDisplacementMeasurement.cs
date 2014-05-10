@@ -50,8 +50,8 @@ namespace OpenOrtho.Analysis
                     var projection0 = Utilities.PointOnLine(point0.Measurement, line0.Measurement, line1.Measurement);
                     var projection1 = Utilities.PointOnLine(point1.Measurement, line0.Measurement, line1.Measurement);
 
-                    spriteBatch.DrawVertices(new[] { line0.Measurement, line1.Measurement }, BeginMode.Lines, Color4.Orange);
-                    spriteBatch.DrawVertices(new[] { point0.Measurement, projection0, point1.Measurement, projection1 }, BeginMode.Lines, Color4.Blue);
+                    spriteBatch.DrawVertices(new[] { line0.Measurement, line1.Measurement }, PrimitiveType.Lines, Color4.Orange);
+                    spriteBatch.DrawVertices(new[] { point0.Measurement, projection0, point1.Measurement, projection1 }, PrimitiveType.Lines, Color4.Blue);
                 }
             }
         }

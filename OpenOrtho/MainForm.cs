@@ -377,7 +377,7 @@ namespace OpenOrtho
 
                 if (setScale)
                 {
-                    var drawMode = scaleRefs.Count == scaleRefs.Capacity ? BeginMode.LineStrip : BeginMode.Points;
+                    var drawMode = scaleRefs.Count == scaleRefs.Capacity ? PrimitiveType.LineStrip : PrimitiveType.Points;
                     spriteBatch.DrawVertices(scaleRefs, drawMode, Color4.Turquoise);
                 }
                 else if (project.Analysis != null)
@@ -400,7 +400,7 @@ namespace OpenOrtho
 
                     spriteBatch.DrawVertices(from point in points
                                              where point.MeasurementSpecified
-                                             select point.Measurement, BeginMode.Points, Color4.Red);
+                                             select point.Measurement, PrimitiveType.Points, Color4.Red);
 
                     var textScale = textSize * Vector2.One / camera.Zoom;
                     if (namesToolStripMenuItem.Checked)
