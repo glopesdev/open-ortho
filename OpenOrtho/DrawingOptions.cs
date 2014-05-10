@@ -11,7 +11,7 @@ namespace OpenOrtho
         None           = 0x0,
         Names          = 0x1,
         MainLines      = 0x2,
-        AuxiliaryLines = 0x4,
+        ProjectionLines = 0x4,
         DistanceLines  = 0x8
     }
 }

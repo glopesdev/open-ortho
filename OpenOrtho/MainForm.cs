@@ -388,7 +388,7 @@ namespace OpenOrtho
                         var options = DrawingOptions.None;
                         if (namesToolStripMenuItem.Checked) options |= DrawingOptions.Names;
                         if (mainLinesToolStripMenuItem.Checked) options |= DrawingOptions.MainLines;
-                        if (auxiliaryLinesToolStripMenuItem.Checked) options |= DrawingOptions.AuxiliaryLines;
+                        if (projectionLinesToolStripMenuItem.Checked) options |= DrawingOptions.ProjectionLines;
                         if (distanceLinesToolStripMenuItem.Checked) options |= DrawingOptions.DistanceLines;
 
                         foreach (var measurement in project.Analysis.Measurements)

@@ -40,7 +40,7 @@ namespace OpenOrtho.Analysis
                 if (point.MeasurementSpecified && line0.MeasurementSpecified && line1.MeasurementSpecified)
                 {
                     spriteBatch.DrawVertices(new[] { line0.Measurement, line1.Measurement }, PrimitiveType.Lines, Color4.Orange);
-                    if ((options & DrawingOptions.DistanceLines) != 0)
+                    if ((options & DrawingOptions.ProjectionLines) != 0)
                     {
                         spriteBatch.DrawVertices(new[] { point.Measurement, projection }, PrimitiveType.Lines, Color4.Blue);
                     }

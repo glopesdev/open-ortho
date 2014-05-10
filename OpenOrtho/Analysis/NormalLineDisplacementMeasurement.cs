@@ -58,7 +58,7 @@ namespace OpenOrtho.Analysis
                     var lp = Utilities.PointOnLine(point.Measurement, nlp0, nlp1);
 
                     spriteBatch.DrawVertices(new[] { l0, nlp0, l1, nlp0, nlp0, nlp1, nlp0, lp, nlp1, lp }, PrimitiveType.Lines, Color4.Orange);
-                    if ((options & DrawingOptions.DistanceLines) != 0)
+                    if ((options & DrawingOptions.ProjectionLines) != 0)
                     {
                         spriteBatch.DrawVertices(new[] { p, lp }, PrimitiveType.Lines, Color4.Blue);
                     }
