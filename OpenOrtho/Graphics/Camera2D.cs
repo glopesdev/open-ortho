@@ -24,7 +24,7 @@ namespace OpenOrtho.Graphics
             Matrix4.CreateTranslation(-Position.X, -Position.Y, 0, out temp);
             Matrix4.Mult(ref transform, ref temp, out transform);
 
-            temp = Matrix4.Scale(Zoom);
+            temp = Matrix4.CreateScale(Zoom);
             Matrix4.Mult(ref transform, ref temp, out transform);
             return transform;
         }

@@ -78,13 +78,13 @@ namespace OpenOrtho.Analysis
                             pA0, pA1,
                             n0, intersection.Value,
                             pB0, pB1,
-                        }, BeginMode.Lines, Color4.Orange);
+                        }, PrimitiveType.Lines, Color4.Orange);
 
                         spriteBatch.DrawVertices(new[]
                         {
                             n0, intersection.Value,
                             tgt, ptgt
-                        }, BeginMode.Lines, Color4.Blue);
+                        }, PrimitiveType.Lines, Color4.Blue);
                     }
                 }
             }
