@@ -80,11 +80,14 @@ namespace OpenOrtho.Analysis
                             pB0, pB1,
                         }, PrimitiveType.Lines, Color4.Orange);
 
-                        spriteBatch.DrawVertices(new[]
+                        if ((options & DrawingOptions.ProjectionLines) != 0)
                         {
-                            n0, intersection.Value,
-                            tgt, ptgt
-                        }, PrimitiveType.Lines, Color4.Blue);
+                            spriteBatch.DrawVertices(new[]
+                            {
+                                n0, intersection.Value,
+                                tgt, ptgt
+                            }, PrimitiveType.Lines, Color4.Blue);
+                        }
                     }
                 }
             }
