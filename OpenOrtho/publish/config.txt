@@ -1,0 +1,7 @@
+;!@Install@!UTF-8!
+InstallPath=".\OpenOrtho"
+RunProgram="setup.exe"
+Directory="."
+GUIMode="1"
+SelfDelete="0"
+;!@InstallEnd@!
