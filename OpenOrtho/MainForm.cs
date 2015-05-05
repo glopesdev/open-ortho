@@ -26,7 +26,8 @@ namespace OpenOrtho
         const float MovementSpeed = 200.0f;
         const float MinZoom = 1f;
         const float MaxZoom = 100f;
-        const float DefaultMarkerSize = 3f;
+        const float DefaultMarkerSize = 2f;
+        const float CaptureMarkerSize = 1f;
 
         OrthoProject project;
         int version;
@@ -140,7 +141,7 @@ namespace OpenOrtho
                         spriteBatch.PixelsPerMeter = project.PixelsPerMillimeter;
 
                         renderTarget.Begin();
-                        RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), DefaultMarkerSize, 2);
+                        RenderModel(new RectangleF(-backgroundWidth / 2, -backgroundHeight / 2, backgroundWidth, backgroundHeight), CaptureMarkerSize, 2);
                         renderTarget.End();
 
                         screenCapture = renderTarget.Texture.ToBitmap();
