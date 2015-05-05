@@ -773,7 +773,21 @@ namespace OpenOrtho
                 using (var reader = XmlReader.Create(openAnalysisDialog.FileName))
                 {
                     var serializer = new XmlSerializer(typeof(CephalometricAnalysis));
-                    project.Analysis = (CephalometricAnalysis)serializer.Deserialize(reader);
+                    var analysis = (CephalometricAnalysis)serializer.Deserialize(reader);
+                    var previous = project.Analysis;
+                    if (previous != null)
+                    {
+                        foreach (var point in analysis.Points)
+                        {
+                            if (previous.Points.Contains(point.Name))
+                            {
+                                point.Measurement = previous.Points[point.Name].Measurement;
+                                point.Placed = true;
+                            }
+                        }
+                    }
+
+                    project.Analysis = analysis;
                     analysisPropertyGrid.Refresh();
                     UpdateStatus();
                 }
