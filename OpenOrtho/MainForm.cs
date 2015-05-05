@@ -512,7 +512,7 @@ namespace OpenOrtho
 
                 foreach (var measurement in project.Analysis.Measurements)
                 {
-                    if (!measurement.Enabled) continue;
+                    if (string.IsNullOrEmpty(measurement.Name) || !measurement.Enabled) continue;
 
                     var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(project.Analysis.Points, project.Analysis.Measurements), measurement.Units);
                     measurementsReport.AppendLine(readout);
@@ -859,7 +859,7 @@ namespace OpenOrtho
 
             foreach (var measurement in analysis.Measurements)
             {
-                if (!measurement.Enabled) continue;
+                if (string.IsNullOrEmpty(measurement.Name) || !measurement.Enabled) continue;
 
                 var readout = string.Format("{0}: {1:F1} ({2})", measurement.Name, measurement.Measure(analysis.Points, analysis.Measurements), measurement.Units);
                 e.Graphics.DrawString(readout, Font, Brushes.Black, offset);
