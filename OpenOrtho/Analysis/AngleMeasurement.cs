@@ -29,9 +29,9 @@ namespace OpenOrtho.Analysis
 
         public override float Measure(CephalometricPointCollection points, CephalometricMeasurementCollection measurements)
         {
-            var lineA = new Vector3(points[LineA1].Measurement - points[LineA0].Measurement);
-            var lineB = new Vector3(points[LineB1].Measurement - points[LineB0].Measurement);
-            return MathHelper.RadiansToDegrees(Vector3.CalculateAngle(lineA, lineB));
+            var lineA = points[LineA1].Measurement - points[LineA0].Measurement;
+            var lineB = points[LineB1].Measurement - points[LineB0].Measurement;
+            return MathHelper.RadiansToDegrees(Utilities.VectorAnglePerpDot(lineB, lineA));
         }
 
         public override void Draw(SpriteBatch spriteBatch, CephalometricPointCollection points, CephalometricMeasurementCollection measurements, DrawingOptions options)
@@ -68,7 +68,7 @@ namespace OpenOrtho.Analysis
                     var axis1 = pA0 - pA1;
                     var axis2 = pB0 - pB1;
 
-                    var direction = Utilities.CompareClockwise(axis1, axis2) < 0 ? axis1 : axis2;
+                    var direction = axis2;
                     direction.Normalize();
 
                     for (int i = 0; i < arcPoints.Capacity; i++)

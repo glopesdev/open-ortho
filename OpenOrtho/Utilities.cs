@@ -57,12 +57,12 @@ namespace OpenOrtho
             float perp_dot_product = -v1.Y * v2.X + v1.X * v2.Y;
             float dot = v1.X * v2.X + v1.Y * v2.Y;
 
-            return (float)Math.Atan2(perp_dot_product, dot) + MathHelper.Pi;
+            return (float)Math.Atan2(perp_dot_product, dot);
         }
 
         public static int CompareClockwise(Vector2 v1, Vector2 v2)
         {
-            var angle1 = VectorAnglePerpDot(v1, v2);
+            var angle1 = VectorAnglePerpDot(v1, v2) + MathHelper.Pi;
             var angle2 = MathHelper.TwoPi - angle1;
 
             return angle1 > angle2 ? -1 : 1;
